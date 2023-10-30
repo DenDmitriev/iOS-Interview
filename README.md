@@ -32,4 +32,5 @@
    - [Side table](https://github.com/DenDmitriev/iOS-Interview/blob/main/Side%20table.md)
    - [ARC](https://github.com/DenDmitriev/iOS-Interview/blob/main/ARC%20и%20управление%20памятью.md)
  - [Многопоточность в iOS-разработке](https://github.com/DenDmitriev/iOS-Interview/blob/main/Основы%20многопоточности.md#использование-pthread-и-nsthread)
- - [Контроль доступа](https://github.com/DenDmitriev/iOS-Interview/blob/main/Контроль%20доступа.md) 
+ - [Контроль доступа](https://github.com/DenDmitriev/iOS-Interview/blob/main/Контроль%20доступа.md)
+ - [RunLoop](https://habr.com/ru/companies/otus/articles/590319/)

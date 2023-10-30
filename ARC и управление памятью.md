@@ -81,7 +81,7 @@ unit4A = nil
 <img width="1261" alt="referenceCycle03_2x" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/a853e714-f09a-4a37-a97e-41c8b3a9f5c9">
 Сильные взаимные ссылки остались между экземплярами Person и Apartment и не могут быть разрушены.
 
-### Слабые (weak) ссылки
+## Слабые (weak) ссылки
 
 Для автоматического удаления объектов нужно сделать исправление. В этот раз свойство tenant экземпляра класса Apartment объявлено как слабая ссылка:
 ```swift

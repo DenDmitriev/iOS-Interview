@@ -29,6 +29,7 @@ theAnimation.repeatCount = 2
 theLayer.addAnimation(theAnimation, forKey: "animatePosition");
 ```
 В верхней анимации параметр autoreverses = YES, в нижней — NO. То есть позиция либо не возвращается к первоначальному значению, либо плавно возвращается.
+
 ![fd8d591a6dd140c18e069ae2ae5a2579](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/853083dc-40a7-49a7-b491-e3f49cd0954f)
 ![e7d4c18a3a924cd7957d56e2f559de88](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/f1cdae30-6a58-42b5-ad8f-5a2640bd59d8)
 

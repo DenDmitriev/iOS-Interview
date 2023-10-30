@@ -29,5 +29,6 @@
  - [Управление памятью в Swift](https://github.com/DenDmitriev/iOS-Interview/blob/main/Управление%20памятью%20в%20Swift.md)
    - [Value Type и Reference Type или чем стек отличается от кучи?](https://github.com/DenDmitriev/iOS-Interview/blob/main/Value%20Type%20and%20Reference.md)
    - [Side table](https://github.com/DenDmitriev/iOS-Interview/blob/main/Side%20table.md)
+   - [ARC](https://github.com/DenDmitriev/iOS-Interview/blob/main/ARC%20и%20управление%20памятью.md)
  - [Многопоточность в iOS-разработке](https://github.com/DenDmitriev/iOS-Interview/blob/main/Основы%20многопоточности.md#использование-pthread-и-nsthread)
  - [Контроль доступа](https://github.com/DenDmitriev/iOS-Interview/blob/main/Контроль%20доступа.md) 

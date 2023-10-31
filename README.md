@@ -26,7 +26,7 @@
     - [Анимация в UIKit](https://github.com/DenDmitriev/iOS-Interview/blob/main/Анимации%20в%20iOS.md)
     - [В чем отличие UIView от UIResponder](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/В%20чем%20отличие%20UIView%20от%20UIResponder.md)
     - [Как работает Responder Chain](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Responder%20Chain.md)
-    - [Как сделать так, чтобы UIView отображалась, в ней был реализовал UITapGestureRecognizer, но он бы не срабатывал?](#как-сделать-так,-чтобы-uiview-отображалась,-в-ней-был-реализовал-uitapgesturerecognizer,-но-он-бы-не-срабатывал?)
+    - [Как сделать так, чтобы UIView отображалась, в ней был реализовал UITapGestureRecognizer, но он бы не срабатывал?](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Как%20сделать%20так%2C%20чтобы%20UIView%20отображалась%2C%20в%20ней%20был%20реализовал%20UITapGestureRecognizer%2C%20но%20он%20бы%20не%20срабатывал.md)
     - [UIControl](#uicontrol)
  - [Управление памятью в Swift](https://github.com/DenDmitriev/iOS-Interview/blob/main/Управление%20памятью%20в%20Swift.md)
    - [Value Type и Reference Type или чем стек отличается от кучи?](https://github.com/DenDmitriev/iOS-Interview/blob/main/Value%20Type%20and%20Reference.md)

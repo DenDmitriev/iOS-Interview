@@ -11,7 +11,7 @@
     - [Методы цикла UIViewController](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Методы%20цикла%20UIViewController.md)
     - [Методы цикла UIView](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Методы%20цикла%20UIView.md)
     - [Сколько раз может вызываться viewDidLoad для контроллера](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Сколько%20раз%20может%20вызываться%20viewDidLoad%20для%20контроллера.md)
-    - [Как добавить дочерний view controller?](#как-добавить-дочерний-view-controller?)
+    - [Как добавить дочерний view controller?](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Как%20добавить%20дочерний%20view%20controller.md)
     - [Состояния UlApplication](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Жизненный%20цикл%20приложения.md)
  - [UIView](#uiview)
     - [Методы цикла UIView](https://github.com/DenDmitriev/iOS-Interview/tree/main/UIKit)

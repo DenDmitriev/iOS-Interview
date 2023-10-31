@@ -16,7 +16,7 @@
  - [UIView](#uiview)
     - [Методы цикла UIView](https://github.com/DenDmitriev/iOS-Interview/tree/main/UIKit)
     - [Отличие UIView от CALayer](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Отличие%20UIView%20от%20CALayer.md)
-    - [Наследники CALayer](#наследники-calayer)  
+    - [Наследники CALayer](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Наследники%20CALayer.md)  
     - [В каком методе производится верстка sublayers? как определеть причну фризов вколлекции В чем отличие point от pixel](#в-каком-методе-производится-верстка-sublayers?-как-определеть-причну-фризов-вколлекции-в-чем-отличие-point-от-pixel)
     - [Что такое Offscreen Rendering, как его избежать?](#что-такое-offscreen-rendering,-как-его-избежать?)
     - [Можно ли вызывать руками layoutSubviews()](#можно-ли-вызывать-руками-layoutsubviews())

@@ -1,7 +1,7 @@
 # iOS-Interview
  - [UIKit](#uikit)
     - [Чем frame отличается от bounds?](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Чем%20frame%20отличается%20от%20bounds.md)
-    - [Афинная трансформация применятся к frame или bounds](https://github.com/DenDmitriev/iOS-Interview/tree/main/UIKit)
+    - [Афинная трансформация применятся к frame или bounds](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Афинная%20трансформация%20применятся%20к%20frame%20или%20bounds.md)
     - [Какие способы верстки знаешь?](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Какие%20способы%20верстки%20знаешь.md)
     - [Зачем нужно ставить translateAutoresizingMask = false](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Зачем%20нужно%20ставить%20translateAutoresizingMask.md)
     - [Что такое constraint?](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Что%20такое%20Constraint.md)

@@ -8,7 +8,7 @@
     - [Зачем нужны compression Resistance Priority u contentHugging Priority](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Зачем%20нужны%20compression%20Resistance%20Priority%20u%20contentHugging%20Priority.md)
     - [Как работает UIStackView](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Как%20работает%20UIStackView.md)
     - [Как можно одновременно добавить и тень и скругление для UIImageView](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Как%20можно%20одновременно%20добавить%20и%20тень%20и%20скругление%20для%20UIImageView.md)
-    - [Методы цикла UIViewController](https://github.com/DenDmitriev/iOS-Interview/tree/main/UIKit)
+    - [Методы цикла UIViewController](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Методы%20цикла%20UIView.md)
     - [Зачем нужен параметр animated в системных методах](#зачем-нужен-параметр-animated-в-системных-методах)
     - [Сколько раз может вызываться viewDidLoad для контроллера](https://github.com/DenDmitriev/iOS-Interview/tree/main/UIKit)
     - [Как добавить дочерний view controller?](#как-добавить-дочерний-view-controller?)

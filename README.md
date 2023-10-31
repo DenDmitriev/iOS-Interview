@@ -24,7 +24,7 @@
     - [Можно ли вызывать руками layoutSubviews()](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Можно%20ли%20вызывать%20руками%20layoutSubviews()%20или%20draw().md)
     - [Можно ли вызывать руками draw()](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Можно%20ли%20вызывать%20руками%20layoutSubviews()%20или%20draw().md)
     - [Анимация в UIKit](https://github.com/DenDmitriev/iOS-Interview/blob/main/Анимации%20в%20iOS.md)
-    - [В чем отличие UIView от UIResponder](#в-чем-отличие-uiview-от-uiresponder)
+    - [В чем отличие UIView от UIResponder](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/В%20чем%20отличие%20UIView%20от%20UIResponder.md)
     - [Как работает Responder Chain](#как-работает-responder-chain)
     - [Как сделать так, чтобы UIView отображалась, в ней был реализовал UITapGestureRecognizer, но он бы не срабатывал?](#как-сделать-так,-чтобы-uiview-отображалась,-в-ней-был-реализовал-uitapgesturerecognizer,-но-он-бы-не-срабатывал?)
     - [UIControl](#uicontrol)

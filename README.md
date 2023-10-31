@@ -40,3 +40,4 @@
  - [Функторы и монады в Swift](https://teletype.in/@hw_code/cDFOQ-XK2)
  - [Class and Struct](https://github.com/DenDmitriev/iOS-Interview/blob/main/Class%20and%20Struct.md)
  - [Связанные типы или associatedtype](https://github.com/DenDmitriev/iOS-Interview/blob/main/Связанные%20типы%20или%20associatedtype.md)
+ - [Типы коллекций](https://github.com/DenDmitriev/iOS-Interview/blob/main/Типы%20коллекций%20Swift.md)

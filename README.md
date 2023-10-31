@@ -10,7 +10,7 @@
     - [Как можно одновременно добавить и тень и скругление для UIImageView](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Как%20можно%20одновременно%20добавить%20и%20тень%20и%20скругление%20для%20UIImageView.md)
     - [Методы цикла UIViewController](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Методы%20цикла%20UIViewController.md)
     - [Методы цикла UIView](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Методы%20цикла%20UIView.md)
-    - [Сколько раз может вызываться viewDidLoad для контроллера](https://github.com/DenDmitriev/iOS-Interview/tree/main/UIKit)
+    - [Сколько раз может вызываться viewDidLoad для контроллера](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Сколько%20раз%20может%20вызываться%20viewDidLoad%20для%20контроллера.md)
     - [Как добавить дочерний view controller?](#как-добавить-дочерний-view-controller?)
     - [Состояния UlApplication](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Жизненный%20цикл%20приложения.md)
  - [UIView](#uiview)

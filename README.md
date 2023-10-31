@@ -28,6 +28,7 @@
     - [Как работает Responder Chain](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Responder%20Chain.md)
     - [Как сделать так, чтобы UIView отображалась, в ней был реализовал UITapGestureRecognizer, но он бы не срабатывал?](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Как%20сделать%20так%2C%20чтобы%20UIView%20отображалась%2C%20в%20ней%20был%20реализовал%20UITapGestureRecognizer%2C%20но%20он%20бы%20не%20срабатывал.md)
     - [UIControl](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/UIControl.md)
+    - [Key-Value Observing (KVO) и Notifications](https://github.com/DenDmitriev/iOS-Interview/blob/main/UIKit/Key-Value%20Observing%20и%20Notifications.md)
  - [Управление памятью в Swift](https://github.com/DenDmitriev/iOS-Interview/blob/main/Управление%20памятью%20в%20Swift.md)
    - [Value Type и Reference Type или чем стек отличается от кучи?](https://github.com/DenDmitriev/iOS-Interview/blob/main/Value%20Type%20and%20Reference.md)
    - [Side table](https://github.com/DenDmitriev/iOS-Interview/blob/main/Side%20table.md)

@@ -27,7 +27,6 @@
     - [Как работает Responder Chain](#как-работает-responder-chain)
     - [Как сделать так, чтобы UIView отображалась, в ней был реализовал UITapGestureRecognizer, но он бы не срабатывал?](#как-сделать-так,-чтобы-uiview-отображалась,-в-ней-был-реализовал-uitapgesturerecognizer,-но-он-бы-не-срабатывал?)
     - [UIControl](#uicontrol)
-    - [Анимации в iOS](https://github.com/DenDmitriev/iOS-Interview/blob/main/Анимации%20в%20iOS.md)
  - [Управление памятью в Swift](https://github.com/DenDmitriev/iOS-Interview/blob/main/Управление%20памятью%20в%20Swift.md)
    - [Value Type и Reference Type или чем стек отличается от кучи?](https://github.com/DenDmitriev/iOS-Interview/blob/main/Value%20Type%20and%20Reference.md)
    - [Side table](https://github.com/DenDmitriev/iOS-Interview/blob/main/Side%20table.md)

@@ -21,7 +21,7 @@ let convertedNumber = Int(possibleNumber) // Int?
 ## Извлечение опционала:
 - [Принудительное извлчение](#принудительное-извлчение)
 - [Привязка опционалов (optional binding)](#привязка-опционалов-optional-binding)
-- [Слияние (nil coalescing)](#cлияние-(nil-coalescing))
+- [Слияние (nil coalescing)](#слияние-nil-coalescing)
 - [Неявно извлеченные опционалы](#неявно-извлеченные-опционалы)
 
 Наиболее безопасными и поэтому рекомендуемыми механизмами работы с опционалами являются optional binding и nil coalescing.

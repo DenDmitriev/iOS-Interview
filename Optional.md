@@ -20,7 +20,7 @@ let convertedNumber = Int(possibleNumber) // Int?
 
 ## Извлечение опционала:
 - [Принудительное извлчение](#принудительное-извлчение)
-- [Привязка опционалов (optional binding)](#привязка-опционалов-(optional-binding))
+- [Привязка опционалов (optional binding)](#привязка-опционалов-optional-binding)
 - [Слияние (nil coalescing)](#cлияние-(nil-coalescing))
 - [Неявно извлеченные опционалы](#неявно-извлеченные-опционалы)
 

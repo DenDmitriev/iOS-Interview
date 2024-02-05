@@ -28,7 +28,7 @@ class HeapObjectSideTableEntry {
 ```
 
 # Жизненный цикл объекта Swift
-
+**live → deiniting → deinited → freed → dead**
 ![f399867c0e27ed62e006d84c60a42223](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/570dbc35-3fee-464a-8115-dedd5e0441db)
 
 - На Live состоянии объект жив. Его счетчики ссылок выставлены по 1. Если есть указатель на слабую ссылку, то создается side table

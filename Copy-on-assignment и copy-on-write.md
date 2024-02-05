@@ -30,6 +30,33 @@ address(arr2, "arr2") // arr2 address: 105553133600496
 // Как можно заметить теперь ссылки ведут на разные области в памяти.
 ```
 
+## Copy-on-write в кастномном типе
+
+Существует вариант интеграции COW в собственный тип данных от [Apple GitHub](https://github.com/apple/swift/blob/658be5b40fe151cc87a49f5f24b2f20b79dd4813/docs/OptimizationTips.rst#advice-use-copy-on-write-semantics-for-large-values). 
+В этом случае создается некий класс-враппер, являющийся оболочкой для хранимого значения.
+```swift
+final class Ref<T> {
+  var val: T
+  init(_ v: T) { val = v }
+}
+
+struct Box<T> {
+  var ref: Ref<T>
+  init(_ x: T) { ref = Ref(x) }
+
+  var value: T {
+    get { return ref.val }
+    set {
+      if !isKnownUniquelyReferenced(&ref) {
+        ref = Ref(newValue)
+        return
+      }
+      ref.val = newValue
+    }
+  }
+}
+```
+
 # Copy-on-assignment (COA)
 Механизм, который по умолчанию используется при копировании значений структур. Как только значение некоторой структуры копируется из одного параметра в другой, создается его полная копия, которая размещается в новой области памяти.
 

@@ -29,3 +29,6 @@ address(arr1, "arr1")  // arr1 address: 105553156825120
 address(arr2, "arr2") // arr2 address: 105553133600496
 // Как можно заметить теперь ссылки ведут на разные области в памяти.
 ```
+
+## Источники
+ - [Copy-on-write](https://habr.com/ru/articles/673372/)

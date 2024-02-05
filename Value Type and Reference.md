@@ -10,7 +10,7 @@
 | Int | Функции |
 | Double | Замыкания 
 | String | Классы |
-| Array |
+| Array | Рекурсивные перечисления |
 | Dictionary |
 | Set |
 | Struct |

@@ -76,3 +76,6 @@ func min<T>(_ x: T, _ y: T) -> T where T: Comparable {
 }
 ```
 
+## Источники
+- [Сила дженериков в Swift. Часть 1](https://habr.com/ru/companies/otus/articles/462753/)
+- [Сила дженериков в Swift. Часть 2](https://habr.com/ru/companies/otus/articles/463789/)

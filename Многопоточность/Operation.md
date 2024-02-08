@@ -89,7 +89,7 @@ operationQueue.addOperation(blockOperation2)
 ```
 
 ## Operation
-Отличие от GCD явялется переиспользованием кода путем создания объекта `Operation`
+Ключевым отличием от GCD явялется переиспользование кода путем создания объекта `Operation`
 Давайте создадим такой объект, который будет выдавать таблицу умнажения в виде массива числел.
 ```swift
 final class MultiplierTableOperation: Operation {

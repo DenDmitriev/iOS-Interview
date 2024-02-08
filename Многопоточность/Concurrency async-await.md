@@ -192,3 +192,39 @@ private func getMovies() {
 // Inside the Task
 // Defer statement inside async
 ```
+
+### Продолжение асинхронных API
+Старый код использует обработчики завершения для уведомления нас, когда какая-то работа была завершена, когда нам придется использовать ее из асинхронной функции - либо для сторонней библиотеки, либо для наших собственных функций, но обновление ее до асинхронной функции потребует много работы. С помощью продолжения мы можем обернуть обработчики завершения в асинхронные API.
+Существует несколько видов продолжений:
+- withCheckedThrowingContinuation
+- withCheckedContinuation
+- withUnsafeThrowingContinuation
+- withUnsafeContinuation
+
+```swift
+func getMoviesPostersAPI(_ movie: ARMovie, completion: @escaping PostersCompletionClosure) {
+    let reviewURL = checkURL(ARAPI.moviePosters, movie)
+    guard let url = reviewURL else {
+        completion(nil, ARNetworkError.invalidUrl)
+        return
+    }
+    ARNetworkManager().executeRequest(url: url, completion: completion)
+}
+
+func allPosters(_ movie: ARMovie) async -> (ARMoviePoster?, Error?) {
+    await withCheckedContinuation { continuation in
+        getMoviesPostersAPI(movie) { posters, error in
+            continuation.resume(returning: (posters, error))
+        }
+    }
+}
+```
+> Продолжение должно быть возобновлено ровно один раз. Не ноль раз, и не дважды или более раз - ровно один раз.
+
+## Преимущества async-awai
+- Избегание пирамид вложенности с замыканиями
+- Сокращение кода
+- Легче читать
+- Безопасность с async/await, результат гарантирован, в то время как блоки завершения могут быть вызваны или не вызываться.
+
+

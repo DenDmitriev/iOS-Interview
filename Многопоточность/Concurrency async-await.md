@@ -226,3 +226,6 @@ func allPosters(_ movie: ARMovie) async -> (ARMoviePoster?, Error?) {
 - Сокращение кода
 - Легче читать
 - Безопасность с async/await, результат гарантирован, в то время как блоки завершения могут быть вызваны или не вызываться.
+
+# Источники
+- [Why use swift async-await?](https://medium.com/@ashokrwt/why-to-use-swift-async-await-b19993be27cf)

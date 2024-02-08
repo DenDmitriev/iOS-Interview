@@ -121,3 +121,74 @@ Task(priority: .medium) {
     }
 }
 ```
+
+### Асинхронные Последовательности
+An AsyncSequence resembles the Sequence type — offering a list of values you can step through one at a time — and adds asynchronicity. An may have all, some, or none of its values available when you first use it. Instead, you use await to receive values as they become available.
+
+AsyncSequence напоминает тип Sequence, предлагая список значений, через которые вы можете пройти по одному за раз, и добавляет асинхронность. Она может иметь все, некоторые или ни одно из его значений, доступных при первом использовании. Вместо этого вы используете await для получения значений по мере их появления.
+
+```swift
+for await i in Counter(howHigh: 10) {   
+  print(i, terminator: " ")
+}
+```
+
+### Асинхронные свойства
+Мы можем сделать свойство асинхронным, для этого нам нужно добавить асинхронное после того, как получим свойство.
+```swift
+Extension UIImage { 
+   // async property 
+   var thumbnail: UIImage? {
+     get async { 
+         let size = CGSize(width: 300, height: 300) 
+         return await self.byPreparingThumbnail(ofSize: size)
+       }
+   }
+}
+```
+>Только свойства только для чтения могут быть асинхронными, нам нужно создать явно установленный для этого свойства. Если мы попытаемся предоставить сеттер для свойства async, компилятор вызовет ошибку.
+
+### Асинхронные свойства с ошибкой
+Свойства Async также поддерживают ключевое слово throws. Нам нужно добавить ключевое слово throws после ключевого слова async в определение свойства и использовать try await с методом, который отвечает за выброс ошибки.
+```swift
+extension UIImage { 
+   var posterImage: UIImage {
+      get async throws {
+     do {
+        let ( data, _) = try await URLSession.shared.data(from: imageUrl)
+         return UIImage(data: data)!
+       } catch {
+           throw error
+         }
+      }
+   }
+}
+```
+
+### Использование отсрочки (defer) внутри асинхронного контекста
+Блок отсрочки `defer` выполняется последним перед выходом из контекста и гарантирует выполнение, гарантируя, что очистка ресурса не упускается из виду.
+
+```swift
+private func getMovies() {
+  defer {
+    print("Defer statement outside async")
+  }
+  Task {
+     defer { 
+        print("Defer statement inside async")
+    }
+    let result = try? await     ARMoviesViewModel().callMoviesAPIAsyncAwait(ARMovieResponse.self)
+    switch result {
+       case .failure(let error): print(error.localizedDescription)
+       case .success(let items): movies = items.results
+       case .none: print("None")
+    }
+   print("Inside the Task")
+  }
+ print("After the Task")
+}
+// After the Task
+// Defer statement outside async
+// Inside the Task
+// Defer statement inside async
+```

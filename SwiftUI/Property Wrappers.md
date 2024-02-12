@@ -94,7 +94,7 @@ struct ShoppingList: View {
 ```
 ```swift
 class ShoppingNote: ObservableObject {
-    @Published var products = [Product]()
+    @Published var products = [Product]() // Массив с нашим списком продуктов
 }
 ```
 ```swift
@@ -142,7 +142,10 @@ struct AddProductView: View {
 }
 ```
 
-// 1: Так как мы хотим создать хранимый class объект c данными покупок то используем в исходном представлении обвертку @StateObject для ShoppingNote
-// 2: Мы передаем экземпляр Product в виде обвертки @Binding так как нам нужна привзяка с исходному объекту и мы хотим его менять в представлении.
-// 3: 
-// 4: Объект ShoppingNote в представлении AddProductView уже в обвертке @ObservedObject так как мы его создали ранее в представлении ShoppingList в обвертке @StateObject и он не уничтожится
+1: Так как мы хотим создать хранимый class объект c данными покупок то используем в исходном представлении обвертку @StateObject для ShoppingNote
+
+2: Мы передаем экземпляр Product в виде обвертки @Binding так как нам нужна привзяка с исходному объекту и мы хотим его менять в представлении.
+
+3: AddProductView принимает в инициализатор уже созданный экземпляр shoppingNote объекта типа ShoppingNote
+
+4: Объект ShoppingNote в представлении AddProductView уже в обвертке @ObservedObject так как мы его создали ранее в представлении ShoppingList в обвертке @StateObject и он не уничтожится

@@ -206,8 +206,11 @@ SwiftUI предоставляет оболочку свойства @Namespace,
 | @StateObject | |
 | @UIApplicationDelegateAdaptor | |
 
-
 | Данные | Типы значений (value type) | Ссылочные типы (reference type) |
 | - | - | - |
 | Создание и хранение | @State | @StateObject |
 | Передача | @Binding | @ObservedObject, @EnvironmentObject |
+
+# Источники
+- [All SwiftUI property wrappers explained and compared](https://www.hackingwithswift.com/quick-start/swiftui/all-swiftui-property-wrappers-explained-and-compared)
+- [SwiftUI Property Wrappers](https://swiftuipropertywrappers.com)

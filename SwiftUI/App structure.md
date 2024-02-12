@@ -58,4 +58,5 @@ struct ContentView: View {
 Когда вы запускаете образец приложения, он отображает сцену, которая содержит иерархию представлений, описанную в ContentView.
 ![ch-01 02 209@2x](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/859c576a-f1d8-4a67-9b81-e20563531a7e)
 
-
+## Источники
+- [Exploring the structure of a SwiftUI app](https://developer.apple.com/tutorials/swiftui-concepts/exploring-the-structure-of-a-swiftui-app)

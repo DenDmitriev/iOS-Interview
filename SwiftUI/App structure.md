@@ -7,7 +7,7 @@ import SwiftUI
 
 @main // указатель точки входа приложения
 struct MyApp: App {
-    var body: some Scene { // Требование протокола App
+    var body: some Scene { // [Требование протокола App](url)
         WindowGroup { // Предоствялет главное окно
             ContentView() // Иерархия прдставлений
         }

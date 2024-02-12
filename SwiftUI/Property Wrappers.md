@@ -149,3 +149,8 @@ struct AddProductView: View {
 3: AddProductView принимает в инициализатор уже созданный экземпляр shoppingNote объекта типа ShoppingNote
 
 4: Объект ShoppingNote в представлении AddProductView уже в обвертке @ObservedObject так как мы его создали ранее в представлении ShoppingList в обвертке @StateObject и он не уничтожится
+
+<img src='https://github.com/DenDmitriev/iOS-Interview/assets/65191747/b9a2c1e1-98e8-4001-bef0-87ffa9582a5c' width='250'>
+<img src='https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8d4afd5f-5396-4bb8-8fe0-3287375118ea' width='250'>
+
+

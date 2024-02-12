@@ -47,3 +47,102 @@ SwiftUI предлагает 17 оберток свойств для наших 
 Если вы обнаружите, что передаете одни и те же данные от просмотра к просмотру, вы найдете полезную обертку свойств `@EnvironmentObject`. Это позволяет читать объект ссылочного типа из общей среды, а не передавать его явно.
 
 Как и @ObservableObject, @EnvironmentObject не следует использовать для создания вашего объекта изначально. Вместо этого создайте его в другом представлении и используйте модификатор `environmentObject(myViewModel)` для введения его в среду. Хотя среда автоматически сохранит право собственности на ваш объект, вы также можете использовать @StateObject для хранения его там, где он был первоначально создан. Однако это не обязательно: поместить объект в окружающую среду достаточно, чтобы сохранить его жизнь без дальнейшего владения.
+
+Например моздадим приложение список продуктов где реализуем обвертки:
+```swift
+struct ContentView: View {
+    var body: some View {
+        ShoppingList() // Представление которое будет показывать список покупок
+    }
+}
+```
+
+```swift
+struct ShoppingList: View {
+    
+    @StateObject var shoppingNote = ShoppingNote() // 1: Класс который будет хранить все продукты
+    @State var showAddProduct = false
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                if !shoppingNote.products.isEmpty {
+                    List($shoppingNote.products) { product in
+                        ProductItem(product: product) // 2: Представление которое оторажает объект
+                    }
+                } else {
+                    Text("Add products")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddProduct.toggle()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showAddProduct) {
+                AddProductView(shoppingNote: shoppingNote) // 3: Представление спомощью которого можно будет добавить продукты
+                    .presentationDetents([.medium])
+            }
+        }
+    }
+}
+```
+```swift
+class ShoppingNote: ObservableObject {
+    @Published var products = [Product]()
+}
+```
+```swift
+struct AddProductView: View {
+    @State var name: String = ""
+    @State var emoji: String = ""
+    @ObservedObject var shoppingNote: ShoppingNote // 4: Тот же объект хранения покупок из основного представления
+    @Environment(\.dismiss) var dismiss
+    private let emojiProduct = [...]
+    
+    var body: some View {
+        VStack {
+            HStack {
+                TextField("🛒", text: $emoji)
+                    .frame(width: 40)
+                TextField("Product", text: $name)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .frame(height: 40)
+            
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 20))]) {
+                    ForEach(emojiProduct, id: \.self) { emoji in
+                        Text(emoji)
+                            .onTapGesture {
+                                self.emoji = emoji
+                            }
+                    }
+                }
+            }
+            
+            Button("Add to list") {
+                shoppingNote.products.append(Product(name: name, emoji: emoji))
+                dismiss()
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(!isProduct)
+        }
+        .padding()
+    }
+    
+    var isProduct: Bool {
+        !name.isEmpty && !emoji.isEmpty
+    }
+}
+```
+
+// 1: Так как мы хотим создать хранимый class объект c данными покупок то используем в исходном представлении обвертку @StateObject для ShoppingNote
+// 2: Мы передаем экземпляр Product в виде обвертки @Binding так как нам нужна привзяка с исходному объекту и мы хотим его менять в представлении.
+// 3: 
+// 4: Объект ShoppingNote в представлении AddProductView уже в обвертке @ObservedObject так как мы его создали ранее в представлении ShoppingList в обвертке @StateObject и он не уничтожится

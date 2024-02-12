@@ -15,7 +15,7 @@ struct MyApp: App {
 }
 ```
 
-Чтобы указать точку входа приложения SwiftUI, образец применяет атрибут `@main` к структуре приложения. Точка входа отвечает за запуск приложения.
+Чтобы указать точку входа приложения SwiftUI, образец применяет атрибут `@main` к структуре приложения. Точка входа отвечает за запуск приложения. Приложение обработает функцию "main".
 
 > Приложение SwiftUI содержит одну и только одну точку входа. Попытка применить `@main` к более чем одной структуре в приложении приводит к ошибке компилятора.
 
@@ -60,3 +60,4 @@ struct ContentView: View {
 
 ## Источники
 - [Exploring the structure of a SwiftUI app](https://developer.apple.com/tutorials/swiftui-concepts/exploring-the-structure-of-a-swiftui-app)
+- [What is @main in Swift](https://medium.com/@abedalkareemomreyh/what-is-main-in-swift-bc79fbee741c)

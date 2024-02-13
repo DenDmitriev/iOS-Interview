@@ -1,4 +1,5 @@
 # Property Wrappers 
+Обертка свойства добавляет слой разделения между кодом, определяющий, как хранится или вычисляется свойство при чтении. Когда вы используете обертку, то вы пишете управляющий код один раз, а затем определяете обертку, которую можете переиспользовать для необходимых свойств.
 SwiftUI предлагает 17 оберток свойств для наших приложений, каждое из которых обеспечивает различную функциональность. Знание того, какой из них использовать и когда имеет решающее значение для того, чтобы все было правильно.
 
 ### `@AppStorage` 
@@ -328,6 +329,136 @@ SwiftUI предоставляет оболочку свойства @Namespace,
 | Создание и хранение | @State | @StateObject |
 | Передача | @Binding | @ObservedObject, @EnvironmentObject |
 
+
+# Создание обертки
+Для того, чтобы определить обертку, вы исользуете контруктор @propertyWrapper перед созданием структуры, перечисления или класса, который определяет свойство wrappedValue. В коде ниже структура TwelveOrLess, которая проверяет, что значение, которое она "оборачивает" всегда хранит значение равное или меньше 12. Если вы попробуете хранить большее значение, чем 12, то в итоге храниться будет именно 12.
+```swift
+@propertyWrapper
+struct TwelveOrLess {
+    private var number = 0
+    var wrappedValue: Int {
+        get { return number }
+        set { number = min(newValue, 12) }
+    }
+}
+```
+Сеттер проверяет, что новые значения меньше 12, а геттер возвращает хранящееся значение.
+
+Вы применяете обертку для свойства написав имя обертки перед свойством в виде атрибута. Вот пример структуры, которая хранит прямоугольник, который имеет обертку свойства TwelveOrLess для контроля того, что размеры этого прямоугольника будут равны или меньше 12:
+```swift
+struct SmallRectangle {
+    @TwelveOrLess var height: Int
+    @TwelveOrLess var width: Int
+}
+
+var rectangle = SmallRectangle()
+print(rectangle.height)
+// Выведет "0"
+
+rectangle.height = 10
+print(rectangle.height)
+// Выведет "10"
+
+rectangle.height = 24
+print(rectangle.height)
+// Выведет "12"
+```
+Свойства height и width получают свои начальные значения из определения обертки TwelveOrLess, которая устанавливаемо TwelveOrLess.number равным 0. Сеттер TwelveOrLess определяет 10 как подходящее значение, таким образом, хранит его в rectangle.height. Однако, число 24 больше чем позволяет хранить TwelveOrLess, так что попытка хранения значение 24 приводит к установке максимально допустимого значения rectangle.height равным 12.
+
+Когда вы применяете обертку к свойству, то компилятор синтезирует код, который предоставляет хранилище для обертки, а так же код, который предоставляет доступ к свойству через эту обертку.
+
+## Установка исходных значений для оберток свойств
+Код в примерах выше устанавливал исходное значение для обернутого свойства предоставляя значение number в определение TwelveOrLess. Код, который использует эту обертку, не может предоставить другое исходное значение для свойства, которое обернуто в TwelveOrLess, например, определение SmallRectangle не может дать исходные значения для height и width. Для поддержки установки начального значения или другой настройки обертка свойств должна добавить инициализатор. Вот расширенная версия TwelveOrLess под названием SmallNumber, которая определяет инициализаторы, которые устанавливают обернутое и максимальное значение:
+```swift
+@propertyWrapper
+struct SmallNumber {
+    private var maximum: Int
+    private var number: Int
+
+    var wrappedValue: Int {
+        get { return number }
+        set { number = min(newValue, maximum) }
+    }
+
+    init() {
+        maximum = 12
+        number = 0
+    }
+    init(wrappedValue: Int) {
+        maximum = 12
+        number = min(wrappedValue, maximum)
+    }
+    init(wrappedValue: Int, maximum: Int) {
+        self.maximum = maximum
+        number = min(wrappedValue, maximum)
+    }
+}
+```
+Определение SmallNumber включает три инициализатора:
+1.  `init()`. Код внутри этого инициализатора устанавливает начальное значение в обертке и начальное максимальное значение, используя значения по умолчанию, равные 0 и 12. 
+2.  `init(wrappedValue : )`. Инициализатор использует указанное здесь значение в обертке и максимальное значение по умолчанию, равное 12.
+3.  `init(wrappedValue: maximum: )`. Свойство создается путем вызова SmallNumber(wrappedValue: 2, maximum: 5), а экземпляр, который обертывает значение, создается путем вызова SmallNumber(wrappedValue: 3, maximum: 4).
+4.  Смешанный. Swift обрабатывает присвоение как аргумент wrappedValue и использует инициализатор, который принимает включенные вами аргументы.
+ Например:
+```swift
+struct SomeRectangle {
+    @SmallNumber var height: Int //  1. init()
+    @SmallNumber var width: Int = 1 // 2. init(wrappedValue : )
+    @SmallNumber(wrappedValue: 2, maximum: 4) var cornerRadius: Int // 3. init(wrappedValue: maximum : )
+    @SmallNumber(maximum: 9) var width: Int = 2 // 4. init(wrappedValue: 2, maximum: 9).
+}
+```
+
+## Проецирование значения из обертки свойства $
+В дополнение к обернутому значению обертка свойства может предоставлять дополнительные функциональные возможности, определяя проецируемое значение. Имя проецируемого значения такое же, как и значение в обертке, за исключением того, что оно начинается со знака доллара ($).
+
+В приведенном выше примере SmallNumber, если вы попытаетесь установить для свойства слишком большое число, обертка свойства скорректирует это число перед его сохранением. Приведенный ниже код добавляет свойство projectedValue в структуру SmallNumber, чтобы отслеживать, скорректировала ли обертка свойства новое значение свойства перед сохранением этого нового значения.
+
+```swift
+@propertyWrapper
+struct SmallNumber {
+    private var number: Int
+    private(set) var projectedValue: Bool
+
+    var wrappedValue: Int {
+        get { return number }
+        set {
+            if newValue > 12 {
+                number = 12
+                projectedValue = true
+            } else {
+                number = newValue
+                projectedValue = false
+            }
+        }
+    }
+
+    init() {
+        self.number = 0
+        self.projectedValue = false
+    }
+}
+
+struct SomeStructure {
+    @SmallNumber var someNumber: Int
+}
+
+var someStructure = SomeStructure()
+
+someStructure.someNumber = 4
+print(someStructure.$someNumber)
+// Выведет "false"
+
+someStructure.someNumber = 55
+print(someStructure.$someNumber)
+// Выведет "true"
+```
+Написание someStructure.$someNumber получает доступ к проецируемому значению обертки. После сохранения небольшого числа, например четырех, значение someStructure.$someNumber становится false. Однако проецируемое значение равно true после попытки сохранить слишком большое число, например 55.
+
+Обертка свойства может возвращать значение любого типа в качестве своего проецируемого значения. В этом примере обертка свойства предоставляет только одну часть информации - было ли число скорректировано - поэтому она предоставляет это логическое значение в качестве своего проецируемого значения. 
+
 # Источники
 - [All SwiftUI property wrappers explained and compared](https://www.hackingwithswift.com/quick-start/swiftui/all-swiftui-property-wrappers-explained-and-compared)
 - [SwiftUI Property Wrappers](https://swiftuipropertywrappers.com)
+- [Обертки свойств в Swift с примерами кода](https://habr.com/ru/companies/otus/articles/558486/)
+- [Свойства](https://swiftbook.ru/content/languageguide/properties/)

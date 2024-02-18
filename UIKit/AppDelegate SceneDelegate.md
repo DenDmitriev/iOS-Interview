@@ -1,1 +1,1 @@
-
+# AppDelegate и SceneDelegate

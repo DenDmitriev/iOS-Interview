@@ -108,3 +108,6 @@ var scrollingViewLayer: CAScrollLayer {
     }
 }
 ```
+
+## Ичтоники:
+- [CALayer Tutorial for iOS: Getting Started](https://www.kodeco.com/10317653-calayer-tutorial-for-ios-getting-started)

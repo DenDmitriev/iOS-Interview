@@ -138,3 +138,6 @@ setContentHuggingPriority(_: UILayoutPriority,
 setContentCompressionResistancePriority(_: UILayoutPriority, 
                                       for: UILayoutConstraintAxis)
 ```
+
+Источники:
+- [The Auto Layout Comprehendium](https://medium.com/@PhiJay/the-auto-layout-comprehendium-%EF%B8%8F-6d7e2105bf70)

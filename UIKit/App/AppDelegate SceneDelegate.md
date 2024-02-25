@@ -26,7 +26,7 @@
 `UIWindowScene` — это подкласс `UIScene` и наиболее распространенный тип сцены, с которой вам придется взаимодействовать.
 Не следует напрямую создавать экземпляр `UIWindowScene`. `UIKit` создаст его за вас. У UIWindowScene есть жизненый цикл и на его события реагирует `UIWindowSceneDelegate`.
 
-####` UIWindowSceneDelegate`
+#### `UIWindowSceneDelegate`
 `UIWindowSceneDelegat`e — это протокол делегата, который является продолжением UISceneDelegate и содержит основные методы, которые используются для реагирования на события жизненного цикла UIWindowScene.
 
 ### `UISceneSession`

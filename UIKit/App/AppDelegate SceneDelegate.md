@@ -46,6 +46,12 @@
 - Имя класса делегата для этой сцены, которое обычно `SceneDelegate`
 - Название storyboard, которая содержит начальный пользовательский интерфейс для этой сцены - Если вы используете storyboard, устанавливать это свойство нет необходимости.
 
+### Кто за что отвечает
+| AppDelegate | SceneDelegate |
+| - | - |
+| UISceneSession | UIScene/UIWindowScene |
+| UISceneConfiguration | UISceneDelegate/UIWindowSceneDelegate |
+
 
 ## Изменения в AppDelegate и его обязанностей:
 Это по-прежнему основная точка входа для приложения iOS 13+. Система вызывает методы `AppDelegate` для событий жизненного цикла уровня приложения.

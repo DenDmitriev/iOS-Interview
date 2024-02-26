@@ -164,7 +164,29 @@ int main(int argc, char * argv[]) {
 - Вы можете вызвать метод `beginBackgroundTask(expirationHandler handler: (() -> Void)? = nil)`, который запрашивает дополнительное время фонового выполнения для вашего приложения.
 - Чтобы продлить время выполнения расширения приложения, используйте метод `performExpiringActivity(withReason:using:)`
 
-`backgroundTimeRemaining` вернет максимальное количество времени, оставшееся для работы приложения в фоновом режиме. Значение действительно только после того, как приложение перейдет в фоновый режим и запустит хотя бы одну задачу, используя `beginBackgroundTask(expirationHandler:)`. Для отладки фоновой задачи нужно использовать метом `beginBackgroundTask(withName:expirationHandler:)`.
+`backgroundTimeRemaining` вернет максимальное количество времени, оставшееся для работы приложения в фоновом режиме. Значение действительно только после того, как приложение перейдет в фоновый режим и запустит хотя бы одну задачу, используя `UIApplication.beginBackgroundTask(expirationHandler:)`. Для отладки фоновой задачи нужно использовать метом `UIApplication.beginBackgroundTask(withName:expirationHandler:)`. Каждый вызов этого API должен иметь соответствующий вызов `UIApplication.endBackgroundTask(identifier:).`
+
+Например: 
+```swift
+ override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(true)
+    
+    let taskId = UIApplication.shared.beginBackgroundTask {
+      print("We are about to kill your task")
+    }
+    
+    print("The task ID: \(taskId)")
+    
+    let _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+      let bgTimeLeft = UIApplication.shared.backgroundTimeRemaining
+      print("Executing (\(bgTimeLeft) seconds remaining)")
+      if bgTimeLeft <= 10 {
+        UIApplication.shared.endBackgroundTask(taskId)
+      }
+    }
+  }
+```
 
 ## Источники
 - [Application life cycle in iOS](https://manasaprema04.medium.com/application-life-cycle-in-ios-f7365d8c1636)
+- [Фоновое выполнение на iOS](https://www.andyibanez.com/posts/background-execution-in-ios/)

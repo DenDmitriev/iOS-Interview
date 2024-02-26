@@ -208,3 +208,6 @@ point = DPI ÷ 163 = 326 ÷ 163 = 2
       </tr>
   </tbody>
 </table>
+
+## Источники
+- [Mobile design 101: pixels, points and resolutions](https://medium.com/@fluidui/mobile-design-101-pixels-points-and-resolutions-f60413035243)

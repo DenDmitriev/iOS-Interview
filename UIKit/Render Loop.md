@@ -51,5 +51,7 @@ Core Animation объединяет изменения в транзакцию, 
 ![00d03a58f78927d250d775b3974f9162](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/281347ed-4a58-456a-89db-e4c257ee1c84)
 
 
+
+
 ## Источники:
 - [Оптимизация рендера в iOS: frame buffer, Render Server, FPS, CPU vs GPU](https://habr.com/ru/articles/647177/)

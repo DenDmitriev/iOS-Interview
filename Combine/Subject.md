@@ -33,3 +33,7 @@ public protocol Subject<Output, Failure> : AnyObject, Publisher {
 - `send(subscription:)` Отправляет подписку подписчику.
 
 Имеет два связанных типа: Output, Failure, которые наследуются от Publisher.
+
+В Combine уже реализованы два типа subject, которые готовы к работе:
+- PassThroughSubject, который выдает новые значения подписчикам без хранения.
+- CurrentValueSubject, который хранит последнее значение и публикует его для подписчиков всякий раз, когда это значение меняется.

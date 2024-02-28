@@ -284,3 +284,166 @@ cancellable = sequence
 // 4
 // 5
 ```
+
+### Предметы (Subjects)
+Это подкласс протокола Publisher, который может выдавать значения по требованию подписчикам, вызывая метод send(_:) В Combine уже реализованы два типа subject, которые готовы к работе:
+- PassThroughSubject, который выдает новые значения подписчикам без хранения.
+- CurrentValueSubject, который хранит последнее значение и публикует его для подписчиков всякий раз, когда это значение меняется.
+
+Представьте, что мы работаем над приложением, чтобы увидеть результаты в прямом эфире и объявления о футбольном матче.
+```swift
+import Combine
+import Foundation
+
+enum LiveScoreError: Error, LocalizedError {
+    case badWeather
+    
+    public var errorDescription: String? {
+        switch self {
+        case .badWeather:
+            return "Игра была приостановлена из-за плохих погодных условий"
+        }
+    }
+}
+
+struct LiveScore<T: Subject> where T.Failure == LiveScoreError {
+    
+    public var publisher: T
+    
+    public init(publisher: T) {
+        self.publisher = publisher
+    }
+    
+    /// Отправка новости
+    public func sendAnnouncement(_ announcement: T.Output) {
+        publisher.send(announcement)
+    }
+    
+    /// Завершение матча
+    public func matchEnded() {
+        publisher.send(completion: .finished)
+    }
+    
+    /// Приостановка матча
+    public func matchSuspended(withReason reason: LiveScoreError) {
+        publisher.send(completion: .failure(reason))
+    }
+}
+```
+Довольно простая конструкция, которая построена с определенной темой. Как только мы создадим экземпляр, мы сможем выпустить новую новость, вызвав метод `sendAnnouncement`. Кроме того, мы можем сказать подписчикам, что подписка закончилась, или мы можем выпустить пользовательскую ошибку, если что-то было не так, используя методы `matchEnded` и `matchSuspended`.
+
+#### PassThroughSubject (Пройти через предмет)
+Что в основном делает PassThroughSubject, так это выдает новые значения подписчикам без хранения какого-либо состояния или самих значений.
+
+```swift
+let passThroughSubject = PassthroughSubject<String, LiveScoreError>()
+let liveScore = LiveScore(publisher: passThroughSubject)
+liveScore.publisher
+    .sink { completion in
+        switch completion {
+        case .finished:
+            print("Матч завершен!")
+        case .failure(let failure):
+            print(failure.localizedDescription)
+        }
+    } receiveValue: { news in
+        print(news)
+    }
+
+liveScore.sendAnnouncement("12' - ⚽️ Манчестер Юнайтед (Роналду)")
+liveScore.sendAnnouncement("15' - 🟨 Тоттенхэм (Эрик Дайер)")
+liveScore.sendAnnouncement("34' - 🟨 Манчестер Юнайтед (Сантос)")
+liveScore.sendAnnouncement("35' - ⚽️ Тоттенхэм (Кин)")
+liveScore.sendAnnouncement("38' - ⚽️ Манчестер Юнайтед (Роналду)")
+liveScore.sendAnnouncement("Половина тайма")
+liveScore.sendAnnouncement("72' - ⚽️ Тоттенхэм (Магуайр - Автогол)")
+liveScore.sendAnnouncement("81' - ⚽️ Манчестер Юнайтед (Роналду)")
+liveScore.sendAnnouncement("85' - 🟨 Манчестер Юнайтед (Погба)")
+liveScore.matchEnded()
+
+// 12' - ⚽️ Манчестер Юнайтед (Роналду)
+// 15' - 🟨 Тоттенхэм (Эрик Дайер)
+// 34' - 🟨 Манчестер Юнайтед (Сантос)
+// 35' - ⚽️ Тоттенхэм (Кин)
+// 38' - ⚽️ Манчестер Юнайтед (Роналду)
+// Половина тайма
+// 72' - ⚽️ Тоттенхэм (Магуайр - Автогол)
+// 81' - ⚽️ Манчестер Юнайтед (Роналду)
+// 85' - 🟨 Манчестер Юнайтед (Погба)
+// Матч завершен!
+```
+
+#### CurrentValueSubject (Текущее значение предмета)
+Это очень похоже на PassThroughSubject с ключевой разницей, CurrentValueSubject хранит фактическое значение и публикует его для подписчиков всякий раз, когда это значение меняется. Поскольку он хранит текущее значение, любой новый подписчик получит это значение в момент подписки.
+
+Другое отличие заключается в том, что CurrentValueSubject имеет начальное значение, с которым нам нужно инициализировать Subject.
+
+```swift
+let currentValueSubject = CurrentValueSubject<String, LiveScoreError>("Матч начался!")
+let liveScore = LiveScore(publisher: currentValueSubject)
+liveScore.publisher
+    .sink { completion in
+        switch completion {
+        case .finished:
+            print("Матч завершен!")
+        case .failure(let failure):
+            print(failure.localizedDescription)
+        }
+    } receiveValue: { news in
+        print(news)
+    }
+
+liveScore.sendAnnouncement("1' - ⚽️ Реал Мадрид (Бензема)")
+liveScore.sendAnnouncement("15' - 🟨 Атл. Мадрид (Суарес)")
+liveScore.sendAnnouncement("36' - 🟥 Атл. Мадрид (Корреа)")
+liveScore.sendAnnouncement("Половина тайма")
+liveScore.matchSuspended(withReason: .badWeather)
+
+// Матч начался!
+// 1' - ⚽️ Реал Мадрид (Бензема)
+// 15' - 🟨 Атл. Мадрид (Суарес)
+// 36' - 🟥 Атл. Мадрид (Корреа)
+// Половина тайма
+// Игра была приостановлена из-за плохих погодных условий
+```
+
+
+### @Published (Обвертка публикатора)
+Используя обертку @Published в любом свойстве, Combine автоматически создаст Publisher для этого свойства, и он будет выдавать значение всякий раз, когда значение свойства изменится. Мы можем получить доступ к издателю с помощью оператора $.
+Единственное ограничение, которое у нас есть, заключается в том, что @Published можно использовать в классах, а не в структурах.
+
+```swift
+class TrafficLight {
+    public enum Light: String {
+        case green = "🟢"
+        case yellow = "🟡"
+        case red = "🔴"
+    }
+
+    @Published public var currentLight: Light
+
+    public init(light: Light) {
+        self.currentLight = light
+    }
+}
+
+let trafficLight = TrafficLight(light: .red)
+trafficLight.$currentLight
+    .sink { newLight in
+        print(newLight.rawValue)
+    }
+
+trafficLight.currentLight = .green
+trafficLight.currentLight = .yellow
+trafficLight.currentLight = .red
+
+// 🔴
+// 🟢
+// 🟡
+// 🔴
+```
+
+## Источники:
+- [Introduction to Combine framework in Swift](https://blorenzop.medium.com/introduction-to-combine-framework-in-swift-4e50ccd6afe2)
+- [Swift Combine Publishers: An Overview](https://www.mikegopsill.com/posts/combine-publishers/)
+- [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)

@@ -91,3 +91,6 @@ Received completion finished
 ```
 
 Запустим playground. Вы получаете ошибку, что метод подписки требует, чтобы типы String и IntSubscriber.Input (т.е. Int) были эквивалентны. Вы получаете эту ошибку, потому что типы, связанные с выводом и сбоями издателя, должны соответствовать типам ввода и сбоя подписчика, чтобы создать подписку между ними.
+
+## Источники:
+- [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)

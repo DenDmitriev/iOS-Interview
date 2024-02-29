@@ -39,3 +39,7 @@ publisher.send(1)
 ```
 
 Вы получаете ошибку "Value of type 'AnyPublisher<Int, Never>' has no member 'send'".
+
+## Источники:
+- [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)
+

@@ -268,3 +268,6 @@ receive finished
 receive finished
 ```
  Обе подписки получают событие завершения вместо события отмены. Они закончены и больше не нуждаются в отмене.
+
+ ## Источники:
+- [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)

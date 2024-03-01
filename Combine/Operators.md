@@ -672,7 +672,7 @@ PlaygroundPage.current.setLiveView(ContentView())
 ```
 Поскольку мы структурировали наш поток Combine, каждый раз, когда издатель, завернутый в firstName, выдает новую строку, она будет назначена нашему содержимому label, который также заворачивает другого издателя, который при обновлении отображает новый текст на нашей Text метке в нашей сцене SwiftUI.
 
-https://github.com/DenDmitriev/iOS-Interview/assets/65191747/cdcd9212-ccf0-46a6-b6f4-aaf42e4045c8
+![sync](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/314ea96b-bf8e-4043-9dd0-09e0fb6b1e0e)
 
 Но в нашем приложении мы не хотим, чтобы все было полностью синхронизировано. Представьте, что мы хотим получить последний контент всего через 1 секунду. Для этого мы будем полагаться на debounce, чтобы дождаться надлежащего времени для публикации любых изменений:
 
@@ -691,14 +691,14 @@ final class ContentViewModel: ObservableObject {
 ```
 Вот наш результат:
 
-https://github.com/DenDmitriev/iOS-Interview/assets/65191747/23144543-7fdf-452b-8cb6-dfd27193ce40
+![debounce](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/480e3356-dc8b-4a97-b237-0715b7357403)
 
 Последние изменения публикуются сразу после одной секунды.
 
 <img width="702" alt="debounce" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/da0f0cff-5875-43e5-b6f1-e896d0fc65fc">
 
 
-## Дроссел
+## throttle
 Этот оператор публикует данные вниз с отсрочкой для каждого элемента сверху. Например, если бы мы применили это в нашем предыдущем примере, наш издатель label выдавал бы одно событие в секунду, являясь первым элементом из восходящего потока или последним (вы можете определить). Если новое значение не публикуется, последнее значение переиздается в нижестоящем потоке:
 
 ```swift
@@ -714,7 +714,6 @@ final class ContentViewModel: ObservableObject {
 }
 ```
 
-https://github.com/DenDmitriev/iOS-Interview/assets/65191747/e9585f16-1508-4383-ab65-ccf5ef371bc0
-
+![throttle](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/f747c2fd-f7ad-458d-aa0b-9d7cf6b94c60)
 
 <img width="702" alt="throttle" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/4b851cd4-be6c-4e97-a6f1-295774f31827">

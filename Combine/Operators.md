@@ -1,8 +1,18 @@
 # Операторы издателей
 В Combine методы, которые выполняют операцию со значениями, поступающими от издателя, называются операторами.
 
+Операторы Combine могут выполнять кучу различных задач, которые мы могли бы отлично выполнить с помощью императивных команд, но, как мы традиционно делали с методами, позвольте мне предоставить вам каждый вид операторов, которые у нас будут:
+- Операторы преобразования: создайте нового издателя, который берет выходные данные из вышестоящей линии и преобразует их в новые значения для публикации из нижестоящей. Мы могли бы сказать, что длина нашего выхода одинакова
+- Операторы фильтрации filter: создайте нового издателя, который принимает только некоторые значения, опубликованные из вышестоящим потоком. Мы могли бы сказать, что длина нашего нисходящего потока меньше, чем длина нашего выше.
+- Комбинирование операторов: взять двух или более издателей и выдавать некоторые значения на основе выходных данных вышестоящего издателя.
+- Операторы синхронизации: отвечают за доставку значений от вышестоящим издателем только при проверке некоторых условий.
+- Операторы добавления: создайте нового издателя, который выдает некоторые дополнительные выходы, помимо вышестоячей.
+- Операторы метаданных: возвращают вывод с некоторой информацией о вышестоящим издателе
+- Операторы планирования: контролируйте время испускаемых значений из вышепо течению
+
 Каждый оператор комбина фактически возвращает тип издателя. Вообще говоря, этот издатель получает вышестоящие значения, манипулирует данными, а затем отправляет эти данные ниже по течению. 
 
+# Операторы преобразования
 ## `collect()`
 Оператор сбора предоставляет удобный способ преобразования потока отдельных значений от издателя в массив этих значений.
 
@@ -224,4 +234,246 @@ var subscriptions = Set<AnyCancellable>()
 // 6
 ```
 
-## Фильтрующие Операторы
+## Reduce
+Подобно scan, но мы не публикуем никаких промежуточных значений. Вместо этого мы просто публикуем окончательную накопленную стоимость. Он публикуется только после завершения вышестоящего издателя.
+```swift
+[1, 2, 3].publisher
+    .reduce(0, +)
+    .sink(receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+// 6
+```
+
+<img width="684" alt="Снимок экрана 2024-02-29 в 17 28 48" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/babe5961-5818-41ef-8780-443755cb0f6b">
+
+
+# Операторы фильтрации
+
+## `filter(_:)`
+Переиздает все элементы, которые соответствуют выражению в замыкании.
+Давайте отфильтруем издателя числе от 1 до 10 по кратности 2м:
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+(1...5).publisher
+    .filter({ $0.isMultiple(of: 2) })
+    .sink(receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+// 2
+// 4
+```
+
+<img width="690" alt="Снимок экрана 2024-03-01 в 08 42 40" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/c374032c-2deb-4aed-aa3f-e789ed45d73d">
+
+## `removeDuplicates()`
+Публикует только те элементы, которые не равны предыдущему элементу. Важно напомнить вам, он удаляет только последовательные дубликаты.
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+[1, 2, 3, 3, 3, 1].publisher
+    .removeDuplicates()
+    .sink(receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+// 1
+// 2
+// 3
+// 1
+```
+
+<img width="734" alt="Снимок экрана 2024-03-01 в 08 47 45" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8cbd8947-81c2-4d63-8d09-c4efe9839058">
+
+## `ignoreOutput()`
+Этот оператор сбрасывает все публикующиеся значения от вышестоящего издателя, выдавая только свое событие завершения.
+
+<img width="728" alt="Снимок экрана 2024-03-01 в 08 51 08" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/66fef243-ffc1-4e3f-ade3-840f32a2c2d1">
+
+## `first()` и `first(where:)`
+Этот оператор публикует только первое выходное значение из издателя выше, без условий или с условием в замыкании.
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+(1...3).publisher
+    .first(where: { $0 == 1 })
+    .sink(receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+
+// 1
+```
+
+<img width="728" alt="Снимок экрана 2024-03-01 в 08 53 15" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/19741372-45b7-40d4-b90d-524af6f20b6b">
+
+## `last()` и `last(where:)
+Этот оператор публикует только последнее выходное значение из издателя выше, без условий или с условием в замыкании.
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+(1...3).publisher
+    .last(where: { $0 == 3 })
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+// 3
+```
+<img width="709" alt="Снимок экрана 2024-03-01 в 08 57 51" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/94ef7305-19aa-4bb8-b6f7-64eab94b381a">
+
+## `dropFirst()` и вариации
+### dropFirst(_ count:)
+Опускает указанное количество элементов перед повторной публикацией последующих элементов.
+
+### drop(while:)
+Опустить элементы от вышестоящего издателя до тех пор, пока данное закрытие не вернет false, прежде чем переиздать все оставшиеся элементы.
+
+### drop(untilOutputFrom:)
+Отбрасывает все элементы из вышестоящего издателя, пока какой-то другой издатель не начнет выдавать значения.
+
+<img width="705" alt="Снимок экрана 2024-03-01 в 09 09 21" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/ad3693e3-5a64-46a0-8143-ba92c614a8c7">
+
+## `prefix(_:)`
+Это полная противоположность от drop. Вместо того, чтобы отбрасывать первую часть опубликованных значений из вышепо течения, мы рассматриваем только их:
+
+<img width="704" alt="Снимок экрана 2024-03-01 в 09 10 53" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/cc000766-8c24-49bc-b09a-a84a9a6983ca">
+
+# Операторы комбинирования
+Операторы делают то, чего не делали предыдущие: они объединяют несколько вышестоящих издателей в один нисходящий. Иногда у вас могут быть разные источники асинхронных данных, и вам действительно нужен способ объединения их результатов в одном потоке. Фраза, которая возобновляет идею: "Я просто хочу результатов, независимо от того, откуда они берутся".
+
+## Zip
+Этот оператор берет двух или более издателей (до 4х) и возвращает их выходные данные в виде кортежа, что означает, что новое значение публикуется нисходящими только в том случае, если все вышестоящие издатели уже опубликовали значение.
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let publisherA = PassthroughSubject<String, Never>()
+let publisherB = PassthroughSubject<String, Never>()
+
+Publishers.Zip(publisherA, publisherB)
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+
+publisherA.send("A") // Нет публикаций, так как нет публикации от второго издателя publisherB
+
+publisherB.send("Z") // ("A", "Z")
+
+publisherB.send("Y")  // Нет публикаций, так как нет публикации от первого издателя publisherA
+
+publisherA.send("B")  // ("B", "Y")
+```
+
+<img width="702" alt="Zip" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/bde8a5f8-e354-4cc0-8cd9-8aa643063b9e">
+
+
+## CombineLatest
+Работает аналогично zip, но в этом случае нисходящий издатель публикует значение каждый раз, когда это делает и нисходящий. Полученный кортеж будет состоять из элемента, который был только что издан вместе со всеми последними элементами из других:
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let publisherA = PassthroughSubject<String, Never>()
+let publisherB = PassthroughSubject<String, Never>()
+
+Publishers.CombineLatest(publisherA, publisherB)
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+
+publisherA.send("A") // Нет публикаций, ждет хотя бы одно значение от publisherB
+
+publisherB.send("Z") // ("A", "Z")
+
+publisherB.send("Y")  // ("A", "Y")
+
+publisherA.send("B")  // ("B", "Y")
+```
+
+<img width="776" alt="CombineLatest" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/829d6aa0-46a6-4425-a785-3ee2883ee367">
+
+
+Пример использования: Представьте, что у вас есть издатели, которые отслеживают значения из textFields. Вы хотите объединить их все, чтобы получить некоторый вывод в виде кортежа всего содержимого из текстовых полей. Если вы измените один из них, вывод должен быть проверен с текущим контентом от других, так как мы заинтересованы в текущих значениях.
+
+## Merge
+Этот оператор объединяет издателей, которые должны иметь один и тот же тип вывода, выдавая все значения, которые поступает из трех источников и ведут себя как будто это один издатель. Всякий раз, когда некоторые из издателей выдают данные, это значение публикуется ниже.
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let publisherA = PassthroughSubject<String, Never>()
+let publisherB = PassthroughSubject<String, Never>()
+
+Publishers.Merge(publisherA, publisherB)
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+
+publisherA.send("A") // A
+
+publisherB.send("Z") // Z
+
+publisherB.send("Y")  // Y
+
+publisherA.send("B")  // B
+```
+
+<img width="702" alt="Merge" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/e94ae57c-3d88-49c2-81e4-9fb29821c2f7">
+
+
+## switchToLatest
+Этот оператор в основном сглаживает издателя издателей, которым мы хотим отслеживать значения, опубликованные с последнего отправленного издателя. Взгляните на этот код:
+
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let publisherA = PassthroughSubject<String, Never>()
+let publisherB = PassthroughSubject<String, Never>()
+
+let subjects = PassthroughSubject<PassthroughSubject<String, Never>, Never>()
+
+subjects
+    .switchToLatest()
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+
+publisherA.send("A") // Нет вывода, так как издателей на самом деле нет в подписке
+publisherB.send("Z") // Нет вывода, так как издателей на самом деле нет в подписке
+
+subjects.send(publisherA) // Подключаем издателя publisherA
+
+publisherA.send("B")  // B
+publisherB.send("Y")  // Нет вывода, так как издателя publisherB нет в подписке subjects
+
+subjects.send(publisherB) // Подключаем издателя publisherB
+
+publisherB.send("X")  // X
+
+publisherA.send("C")  // Нет вывода, так как мы переключились на издателя publisherB
+```
+
+<img width="947" alt="switchToLatest" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/b01419f7-161d-40ec-a79b-9ac4c5a5b7e6">
+
+

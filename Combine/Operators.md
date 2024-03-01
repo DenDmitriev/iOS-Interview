@@ -716,3 +716,7 @@ final class ContentViewModel: ObservableObject {
 ![throttle](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/f747c2fd-f7ad-458d-aa0b-9d7cf6b94c60)
 
 <img width="702" alt="throttle" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/4b851cd4-be6c-4e97-a6f1-295774f31827">
+
+## Источники:
+- [Swift Combine Operators: the Core Ones and When Apply](https://betterprogramming.pub/swift-combine-operators-the-core-ones-and-when-apply-82d6dd310aa5)
+- [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)

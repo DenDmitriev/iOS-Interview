@@ -1,5 +1,19 @@
-# AnyPublisher
+# TypeEraser
+При использовании Combine Framework вы столкнетесь с концепцией TypeEraser. На самом деле это не имеет ничего общего с Combine Framework. Это скорее особенность языка. Но TypeEraser по своим терминам кажется несколько странным, потому что он на самом деле не удаляет тип. На самом деле он скрывает тип за каким-то другим типом AnyPublisher.
+
+## AnyPublisher
 Бывают случаи, когда вы хотите, чтобы подписчики подписывались на получение событий от издателя, не имея возможности получить доступ к дополнительной информации об этом издателе.
+Например давайте создадим PassthroughSubject, который обрабатывает Integer и никогда не отправит ошибку:
+```swift
+let publisher = PassthroughSubject<Int, Never>()
+```
+В некоторых случаях вы хотите скрыть сведения о типе издателя, которого вы использовали. Таким образом, вы не хотите, чтобы клиент или кто-то другой, кто использует издателя, знал, что вы используете PassthroughSubject через тематического издателя. Вы хотите сохранить это в тайне. Что ты можешь сделать для этого сейчас? Ответ - использовать `eraseToAnyPublisher()`.
+
+### `eraseToAnyPublisher()`
+Вызываем функцию, которая называется `eraseToAnyPublisher()`. Это ничего не стирает. Это просто поставит ваш PassthroughSubject позади другого издателя. Это называется AnyPublisher.
+```swift
+let publisher: AnyPublisher<Int, Never> = PassthroughSubject<Int, Never>().eraseToAnyPublisher()
+```
 
 Это лучше всего продемонстрировать на примере, поэтому добавьте этот новый на свою игровую площадку:
 ```swift
@@ -44,6 +58,14 @@ publisher.send(1)
 
 Вы получаете ошибку "Value of type 'AnyPublisher<Int, Never>' has no member 'send'".
 
+### Побочные эффекты?
+Если вы примените это, все функции, связанные с PassthroughSubject, исчезнут, потому что вы скрыли тип за AnyPublisher.
+Потому что ваш код теперь не будет знать внутренние детали и название издателя, которого использует ваш код. Ваш код не будет точно знать, какого издателя вы использовали.
+
+## Вывод
+Вся идея ластика типов заключается в том, чтобы просто поместить ваш конкретный тип за каким-то другим типом (AnyPublisher).
+
 ## Источники:
 - [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)
+- [Swift Combine: TypeEraser, things you might have never known of](https://paigeshin1991.medium.com/swift-combine-typeeraser-things-you-might-have-never-known-of-fd8102c26b87)
 

@@ -474,6 +474,247 @@ publisherB.send("X")  // X
 publisherA.send("C")  // Нет вывода, так как мы переключились на издателя publisherB
 ```
 
-<img width="947" alt="switchToLatest" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/b01419f7-161d-40ec-a79b-9ac4c5a5b7e6">
+<img width="947" alt="switchToLatest" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/b4f5ec60-535a-4f02-9498-ecdc7fa53ba5">
 
 
+Пример использования: Представьте, что у вас есть панель вкладок с тремя экранами, каждый из которых соответствует вкладке. У каждого из этих viewControllers есть издатель, который продолжает выдавать значения, но мы хотим отслеживать только значения, которые были опубликованы выбранной вкладкой. Мы должны отобразить значения в небольшом оповещении перед UITabBarController. Наиболее подходящим решением было бы полагаться на издателя, который выдает издателя из соответствующего ViewController, как только он появляется, а затем через оператор switchLatest мы отслеживаем значения, которые исходят с выбранного экрана.
+
+# Дополнительные издатели
+## prepend
+Добавляет начальное значение перед всеми опубликованными значениями
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+["A", "B", "C", "D", "E"].publisher
+    .prepend("Алфавит")
+    .sink(receiveValue: { value in
+        print(value)
+    })
+    .store(in: &subscriptions)
+// Алфавит
+// A
+// B
+// C
+// D
+// E
+```
+
+<img width="691" alt="Снимок экрана 2024-03-01 в 09 57 13" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/5a17c275-1663-48a2-b389-e74a0aa2002b">
+
+## append
+Добавьте новые значения в конце восходящего потока после завершения.
+```var subscriptions = Set<AnyCancellable>()
+
+["A", "B", "C", "D", "E"].publisher
+    .append("Алфавит")
+    .sink { completion in
+        print(completion)
+    } receiveValue: { value in
+        print(value)
+    }
+    .store(in: &subscriptions)
+// A
+// B
+// C
+// D
+// E
+// Алфавит
+// finished
+```
+
+<img width="694" alt="Снимок экрана 2024-03-01 в 09 57 27" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8b4929b7-af47-444d-b7b3-81bc7264fadd">
+
+# Операторы метаданных
+## Count
+Возвращает, сколько значений было опубликовано от издателя выше но игнорируя их. Публикует своезначение значение только тогда, когда заканчивается вышепоток.
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+alphabet.publisher
+    .count()
+    .sink { completion in
+        print(completion)
+    } receiveValue: { value in
+        print(value)
+    }
+    .store(in: &subscriptions)
+// 26
+// finished
+```
+
+<img width="671" alt="Снимок экрана 2024-03-01 в 10 04 02" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/85943c60-cba6-4d86-8016-6d911cf579a8">
+
+## `output(at:)`
+Публикует элемент в данной позиции, как только он существует по индексу:
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+alphabet.publisher
+    .output(at: alphabet.count - 1) // хотим последний элемент
+    .sink { completion in
+        print(completion)
+    } receiveValue: { value in
+        print(value)
+    }
+    .store(in: &subscriptions)
+// z
+// finished
+```
+
+<img width="714" alt="Снимок экрана 2024-03-01 в 10 08 02" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/25c2fd2d-ed38-4474-b04b-f4e136ff870a">
+
+
+## `contains(_:)`
+Публикует bool вниз по потоку, указывающий, содержат ли значения восходящего потока какое-то конкретное значение или есть какое-то значение, следующее за каким-то конкретным condition(contains(where:))
+```swift
+var subscriptions = Set<AnyCancellable>()
+
+let alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+alphabet.publisher
+    .contains("w") // проверяем на наличие буквы "w"
+    .sink { value in
+        print(value)
+    }
+    .store(in: &subscriptions)
+// true
+```
+
+## `allSatisfy`
+Публикует логическое определение того, соблюдают ли все значения из вышепотока какого-либо условия. Публикуется только после завершения upstream.
+Например сделаем подписку на проверку влидности, как только данные не проходят проверку то закрываем доступ:
+```swift
+var subscriptions = Set<AnyCancellable>()
+let validation = PassthroughSubject<Bool, Never>()
+
+validation
+    .allSatisfy({ $0 })
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { isValid in
+        print(isValid)
+    })
+    .store(in: &subscriptions)
+
+validation.send(true) // Нет публикаций
+validation.send(true) // Нет публикаций
+validation.send(true) // Нет публикаций
+validation.send(false) // false и завершение
+```
+
+<img width="702" alt="allSatisfy" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/c5b58ec9-84d1-4bef-9d02-6ae608c756a0">
+
+# Издатели Планирования
+## Задержка `delay(for:tolerance:scheduler:options:)`
+Начинает публикацию значений из вышепотока (или события завершения) только после некоторой задержки
+```swift
+var subscriptions = Set<AnyCancellable>()
+let subjectInt = PassthroughSubject<Int, Never>()
+
+subjectInt
+    .delay(for: .seconds(5), scheduler: RunLoop.main)
+    .sink(receiveCompletion: { completion in
+        print(completion)
+    }, receiveValue: { isValid in
+        print(isValid)
+    })
+    .store(in: &subscriptions)
+
+subjectInt.send(1) // Отсрочка публикации на 5 секунд
+subjectInt.send(2) // Публикует сразу 2
+subjectInt.send(3) // Публикует сразу 3
+```
+<img width="699" alt="Снимок экрана 2024-03-01 в 10 38 21" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/301a6989-448f-4cd3-bd68-2d9b14ad8cce">
+
+## debounce
+Этот оператор применим, когда мы не хотим, чтобы события испускались в слишком близком промежутке времени. На этот раз давайте возьмем пример пользовательского интерфейса: представьте, что у вас есть сцена SwiftUI, где вы отображаете TextField вертикально выровненный с меткой Text. Мы полагаемся на класс ContentViewModel в качестве StateObject для нашего ContentView и двух опубликованных свойств внутри: строка firstName, привязку которой мы вводим в наш TextField, и метку, которая должна отображаться на тексте:
+
+
+Этот оператор применим, когда мы не хотим, чтобы события испускались в слишком близком промежутке времени. На этот раз давайте возьмем пример пользовательского интерфейса: представьте, что у вас есть сцена SwiftUI, где вы отображаете TextField вертикально выровненный с меткой Text. Мы полагаемся на класс ContentViewModel в качестве StateObject для нашего ContentView и двух опубликованных свойств внутри: строка firstName, привязку которой мы вводим в наш TextField, и метку, которая должна отображаться на тексте:
+
+```swift
+import SwiftUI
+import PlaygroundSupport
+import Combine
+
+final class ContentViewModel: ObservableObject {
+    @Published var firstName: String = ""
+    @Published var label: String = "Default value"
+    
+    init() {
+        $firstName.assign(to: &$label)
+    }
+}
+
+struct ContentView: View {
+    @StateObject var viewModel = ContentViewModel()
+    
+    var body: some View {
+        VStack {
+            TextField("First Name", text: $viewModel.firstName)
+                .textFieldStyle(.roundedBorder)
+                .cornerRadius(4)
+                .padding(.bottom, 16)
+                .padding(.horizontal, 16)
+            Text(viewModel.label)
+                .font(.footnote)
+                .multilineTextAlignment(.leading)
+        }
+        .padding()
+    }
+}
+
+PlaygroundPage.current.setLiveView(ContentView())
+```
+Поскольку мы структурировали наш поток Combine, каждый раз, когда издатель, завернутый в firstName, выдает новую строку, она будет назначена нашему содержимому label, который также заворачивает другого издателя, который при обновлении отображает новый текст на нашей Text метке в нашей сцене SwiftUI.
+
+https://github.com/DenDmitriev/iOS-Interview/assets/65191747/cdcd9212-ccf0-46a6-b6f4-aaf42e4045c8
+
+Но в нашем приложении мы не хотим, чтобы все было полностью синхронизировано. Представьте, что мы хотим получить последний контент всего через 1 секунду. Для этого мы будем полагаться на debounce, чтобы дождаться надлежащего времени для публикации любых изменений:
+
+```swift
+final class ContentViewModel: ObservableObject {
+    @Published var firstName: String = ""
+    @Published var label: String = "Default value"
+    
+    init() {
+        $firstName
+            .debounce(for: .seconds(1), // отсрочка
+                      scheduler: RunLoop.main)
+            .assign(to: &$label)
+    }
+}
+```
+Вот наш результат:
+
+https://github.com/DenDmitriev/iOS-Interview/assets/65191747/23144543-7fdf-452b-8cb6-dfd27193ce40
+
+Последние изменения публикуются сразу после одной секунды.
+
+<img width="702" alt="debounce" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/da0f0cff-5875-43e5-b6f1-e896d0fc65fc">
+
+
+## Дроссел
+Этот оператор публикует данные вниз с отсрочкой для каждого элемента сверху. Например, если бы мы применили это в нашем предыдущем примере, наш издатель label выдавал бы одно событие в секунду, являясь первым элементом из восходящего потока или последним (вы можете определить). Если новое значение не публикуется, последнее значение переиздается в нижестоящем потоке:
+
+```swift
+final class ContentViewModel: ObservableObject {
+    @Published var firstName: String = ""
+    @Published var label: String = "Default value"
+    
+    init() {
+        $firstName
+            .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
+            .assign(to: &$label)
+    }
+}
+```
+
+https://github.com/DenDmitriev/iOS-Interview/assets/65191747/e9585f16-1508-4383-ab65-ccf5ef371bc0
+
+
+<img width="702" alt="throttle" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/4b851cd4-be6c-4e97-a6f1-295774f31827">

@@ -720,3 +720,4 @@ final class ContentViewModel: ObservableObject {
 ## Источники:
 - [Swift Combine Operators: the Core Ones and When Apply](https://betterprogramming.pub/swift-combine-operators-the-core-ones-and-when-apply-82d6dd310aa5)
 - [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)
+- [Swift Combine Marbles](https://github.com/robertpalmer/CombineMarbles)

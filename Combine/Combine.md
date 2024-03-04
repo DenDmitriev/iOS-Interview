@@ -13,7 +13,7 @@
       - [PassThroughSubject](#passthroughsubject-пройти-через-предмет)
       - [CurrentValueSubject](#currentvaluesubject-текущее-значение-предмета)
     - @[Published](#published-обвертка-публикатора)
-    - [DataTaskPublisher](url)
+    - [DataTaskPublisher](#DataTaskPublisher)
 2. [Подписчик (Subscriber)](#подписчик-или-subscriber)
 3. [Подписка (Subscription)](#подписка-или-subscription)
 4. [Жизненный цикл](#жизненный-цикл)

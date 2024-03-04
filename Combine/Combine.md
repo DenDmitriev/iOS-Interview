@@ -446,10 +446,10 @@ trafficLight.currentLight = .red
 ## В заключении соберем все вместе
 | Name | Publisher | Subscription | Sibscriber |
 | - | - | - | - |
-| - |  Наблюдаемый объект, который выдает значения с течением времени и который также может быть завершен, когда больше нет доступных значений или когда он столкнулся с ошибкой. |  | Объекты или замыкания, используемые для наблюдения за Publisher`ом. |
+| - |  Наблюдаемый объект издатель, который выдает значения с течением времени и который также может быть завершен, когда больше нет доступных значений или когда он столкнулся с ошибкой. | Объект который связывает издателя и подписчика | Объекты или замыкания, используемые для наблюдения за издателем. |
 | Protocol | Publisher | Cancellable | Subscriber |
 | Eraser Object | struct AnyPublisher | ~~class AnyCancellable~~ | struct AnySubscriber |
-| Default | Subjects(PassThroughSubject, CurrentValueSubject)  | `AnyCancellable`, `Set<AnyCancellable>` | `sink(receiveValue:)` |
+| Default | Императивные: Subjects(PassThroughSubject, CurrentValueSubject)\Реактивные: Just, Empty, Future, Fail, Sequence, @Published  | `AnyCancellable`, `Set<AnyCancellable>` | `sink(receiveValue:)` |
 
 
 ## Источники:

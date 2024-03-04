@@ -3,15 +3,15 @@
 
 В структуре Combine можно выделить четыре основные концепции, которые нам нужно понять, прежде чем погрузиться в нее:
 1. [Издатель (Publisher)](#издатель-или-publisher)
-  - Just
-  - Empty
-  - Fail
-  - Future
-  - Sequence
-  - Subject
-    - PassThroughSubject
-    - CurrentValueSubject
-  - @Published
+    - Just
+    - Empty
+    - Fail
+    - Future
+    - Sequence
+    - Subject
+      - PassThroughSubject
+      - CurrentValueSubject
+    - @Published
 2. [Подписчик (Subscriber)](#подписчик-или-subscriber)
 3. [Подписка (Subscription)](#подписка-или-subscription)
 4. [Операторы](#операторы)

@@ -63,7 +63,7 @@ public protocol Subscriber<Input, Failure>: CustomCombineIdentifierConvertible {
 }
 ```
 
-### Подписка или Subscription
+## Подписка или Subscription
 Это протокол, который связывает издателя и подписчика. Вот протокол Subscription:
 ```swift
 public protocol Subscription: Cancellable, CustomCombineIdentifierConvertible {
@@ -442,6 +442,15 @@ trafficLight.currentLight = .red
 // 🟡
 // 🔴
 ```
+
+## В заключении соберем все вместе
+| Name | Publisher | Subscription | Sibscriber |
+| - | - | - | - |
+| - |  Наблюдаемый объект, который выдает значения с течением времени и который также может быть завершен, когда больше нет доступных значений или когда он столкнулся с ошибкой. |  | Объекты или замыкания, используемые для наблюдения за Publisher`ом. |
+| Protocol | Publisher | Cancellable | Subscriber |
+| Eraser Object | struct AnyPublisher | ~~class AnyCancellable~~ | struct AnySubscriber |
+| Default | Subjects(PassThroughSubject, CurrentValueSubject)  | `AnyCancellable`, `Set<AnyCancellable>` | `sink(receiveValue:)` |
+
 
 ## Источники:
 - [Introduction to Combine framework in Swift](https://blorenzop.medium.com/introduction-to-combine-framework-in-swift-4e50ccd6afe2)

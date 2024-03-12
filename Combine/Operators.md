@@ -724,7 +724,7 @@ final class ContentViewModel: ObservableObject {
 
 Последние изменения публикуются сразу после одной секунды.
 
-<img width="1092" alt="debounce" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/3245cd96-04b6-42a0-b50e-6f119eb96a9b">
+<img width="1092" alt="debounce" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/782e7757-322d-4c5d-8884-1b7da680cb98">
 
 
 ## throttle

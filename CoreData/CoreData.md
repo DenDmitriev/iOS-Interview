@@ -131,4 +131,130 @@ Core Data предоставляет набор классов, которые �
 
 <img width="921" alt="Снимок экрана 2024-03-12 в 17 27 56" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/fad77e64-d14d-4c45-be98-f3bcae9e9982">
 
+Если простыми словами, то все модели (Entity) на данной диаграмме это Managed Object. Все Managed Objects хранятся в NSManagedObjectContext. Context cсылается на NSPersistentContainer который является обверткой над NSPersistentStoreCoordinator. NSPersistentStoreCoordinator хранит после обращения к SQLite ваши сохраненные данные, в виде Row Cache.  
 
+Чтобы создать экземпляр вашего ManagedObject (Entity), вы должны обратиться к своему NSPersistentContainer.
+
+```swift
+let container: NSPersistentContainer = {
+        // 1. Инициализация постоянного контейнера
+        let container = NSPersistentContainer(name: "CoreDataDocumentation")
+
+        // 2. Поручить контейнеру загрузить постоянные хранилища (PersistentStores) и завершить создание стека основных данных.
+        // Обработчик завершения `completionHandler` будет вызываться один раз для каждого созданного постоянного хранилища.
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            // Если есть ошибка при загрузке постоянных хранилища (PersistentStores), будет заполнено значение NSError.
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        })
+        // Указывает, автоматически ли контекст объединяет изменения, сохраненные в его постоянном координаторе (PersistentStoreCoordinator) или родительском контексте.
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        return container // Cтек полностью инициализировался и готов к использованию
+    }()
+```
+
+Далее мы должны обратиться к NSManagedObjectContext через наш PersistentContainer:
+
+```swift
+let context = container.viewContext
+```
+
+Теперь мы наконец можем создать экземпляр нашего Manage Object из нашего контекста и присвоить ему значение:
+
+```swift
+let planet = Planet(context: context)
+planet.name = "Earth"
+```
+
+Чтоб объект попал в базу данных, нужно сохранить объект:
+
+```swift
+try? context.save()
+```
+
+Теперь рассмотрим типовые функции работы с данными используя `container` (Persistent Container) с `context` контекстом (Managed Object Context).
+
+```swift
+class PlanetsPersistenceController: ObservableObject {
+    let container: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "CoreDataDocumentation")
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        })
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        return container
+    }()
+    
+    lazy var context = container.viewContext
+}
+```
+
+## Создание
+
+```swift
+let planet = Planet(context: context)
+planet.name = "Earth"
+try? context.save()
+```
+
+## Обновление
+
+## Удаление
+Функция контекста `delete(_:)` позволяет нам легко удалить объект из Core Data:
+```swift
+context.delete(planet)
+try? context.save()
+```
+
+## Получение
+### Получение всех объектов типа
+Для того чтобы получить массив всех объектов типа из Core Data мы должный выполнить NSFetchRequest.
+```swift
+let request = Planet.fetchRequest() // NSFetchRequest<Planet>
+let planets = try? context.fetch(request) // [Planet]?
+```
+
+или используя пустой предикат
+```swift
+let request = Planet.fetchRequest()
+request.predicate = NSPredicate(value: true)
+let planets = try? context.fetch(request)
+```
+
+### Получение выборки объектов по предикату
+Чтобы добавить фильтр в запрос на выборку данных, используется предикат. Затем используйте функцию fetch(_:) на экземпляре NSManagedObjectContext:
+```swift
+let request = Planet.fetchRequest()
+request.predicate = NSPredicate(format: "name LIKE %@", "Earth")
+let planets = try? context.fetch(request)
+```
+
+### Получение объекта по ID
+```swift
+let id = planet.objectID // NSManagedObjectID
+let planet = try? context.existingObject(with: id) as? Planet
+```
+
+### FetchRequest
+Под капотом NSFetchRequest делает огромную работу:
+1. NSFetchRequest отправляется в Persistent Store Coordinator
+2. Persistent Store Coordinator отправляет запрос в Persistent Store
+3. Persistent Store отправляет отправляет запрос в SQL
+4. SQL делает запрос и выдает все подходящие строки. Каждая строка имеет ID и Row Value. Это Row Value передается в Persistent Store и храниться там в виде Row Cache со своим ID.
+5. Persistent Store инициализирует Managed Objects для определенных ID и возвращает их в Persistent Store Coordinator. Полученные данные являются fault (пустыми) до того момента пока мы не обратимся к конкретному объекту. Если в Managed Object Context уже был объект с нужным ID, Core Data не будет отправлять запрос ниже к SQL.
+6. Persistent Store Coordinator возвращает в context массив Managed Object
+7. Перед возвращением объекта Core Data проверяет объекты на изменения. Чтобы убрать это поведение можете установить флаг includePendingChanges = false
+8. Возвращается массив NSManagedObject
+
+> Пока выполняется NSFetchRequest Managed Object Context и Persistent Store Coordinator выполняется в синхронной очереди и все процессы блокируются пока другой процесс отрабатывается
+
+## Обновление
+Чтоб обновить объект нужно получить объект одним из способо, изменить его, затем сохранить контекст
+```swift
+let planet = try? context.existingObject(with: id) as? Planet
+planet?.name = "Mars"
+try? context.save()
+```

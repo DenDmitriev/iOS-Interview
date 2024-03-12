@@ -255,7 +255,7 @@ let planet = try? context.existingObject(with: id) as? Planet
 ## Обновление
 Чтоб обновить объект нужно получить объект одним из способо, изменить его, затем сохранить контекст
 ```swift
-let planet = try? context.existingObject(with: id) as? Planet
-planet?.name = "Mars"
+let venera = try? context.existingObject(with: id) as? Planet
+venera?.name = "Mars"
 try? context.save()
 ```

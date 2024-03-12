@@ -636,6 +636,9 @@ validation.send(false) // false и завершение
 <img width="702" alt="allSatisfy" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/c5b58ec9-84d1-4bef-9d02-6ae608c756a0">
 
 # Операторы планирования
+## Планировщик `scheduler`
+В каждом операторе планирования используется планировщик. Планировщик оперделяет где будет осуществляться отслеживание времени событий.
+
 ## Задержка `delay(for:tolerance:scheduler:options:)`
 Задерживает публикацию всего вывода к нисходящему издателю на указанное время на определенном планировщике. 
 ```swift
@@ -748,6 +751,55 @@ final class ContentViewModel: ObservableObject {
 ![throttle](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/f747c2fd-f7ad-458d-aa0b-9d7cf6b94c60)
 
 <img width="702" alt="throttle" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/4b851cd4-be6c-4e97-a6f1-295774f31827">
+
+## measureInterval
+Измеряет и излучает временной интервал между событиями, полученными от вышестоящим издателя.
+
+```swift
+var subject = PassthroughSubject<String, Never>()
+
+subject
+    .measureInterval(using: RunLoop.main)
+    .sink { completion in
+        print(completion)
+    } receiveValue: { value in
+        print(value)
+    }.store(in: &cancellable)
+
+sleep(1)
+subject.send("A") // Stride(magnitude: 1.006095051765442)
+sleep(3)
+subject.send("B") // Stride(magnitude: 3.008539915084839)
+sleep(2)
+subject.send("С") // Stride(magnitude: 2.0039960145950317)
+```
+
+## timeout
+Прекращение публикации, если вышестоящий издатель превышает указанный временной интервал без создания элемента.
+
+```swift
+var subject = PassthroughSubject<(String, Int), Never>()
+
+var timeoutTime: Int = 5
+
+subject
+    .timeout(.seconds(timeoutTime), scheduler: DispatchQueue.main)
+    .sink { completion in
+        print(completion)
+    } receiveValue: { value, waitTime in
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(waitTime)) {
+            print(value)
+        }
+    }.store(in: &cancellable)
+
+subject.send(("A", 1))
+subject.send(("B", 6))
+subject.send(("С", 3))
+// A
+// С
+// finished
+// B
+```
 
 ## Источники:
 - [Swift Combine Operators: the Core Ones and When Apply](https://betterprogramming.pub/swift-combine-operators-the-core-ones-and-when-apply-82d6dd310aa5)

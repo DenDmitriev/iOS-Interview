@@ -228,13 +228,14 @@ let planets = try? context.fetch(request)
 Чтобы добавить фильтр в запрос на выборку данных, используется предикат. Затем используйте функцию fetch(_:) на экземпляре NSManagedObjectContext:
 ```swift
 let request = Planet.fetchRequest()
-request.predicate = NSPredicate(format: "name LIKE %@", "Earth")
-let planets = try? context.fetch(request)
+request.predicate = NSPredicate(format: "name LIKE %@", "Mars")
+let mars = try? context.fetch(request)
 ```
 
 ### Получение объекта по ID
 ```swift
-let id = planet.objectID // NSManagedObjectID
+// mars - Planet object
+let id = mars.objectID // NSManagedObjectID
 let planet = try? context.existingObject(with: id) as? Planet
 ```
 

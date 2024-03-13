@@ -38,3 +38,27 @@ extension Planet {
 
 Рассмотрим методы для работы с этими моделями и отношениями:
 
+Для начала получим звезду солнце из базы данных:
+```swift
+let request = Star.fetchRequest()
+request.predicate = NSPredicate(format: "name == %@", name)
+request.fetchLimit = 1
+let sun = (try? context.fetch(request))?.first // Star?
+```
+Приведение к неопуиональному типу Star и поработаем с моделью:
+
+## Получеение
+Получение всеx планет солнца.
+```swift
+let context = container.viewContext
+let planets = star.planets.allObjects as? [Planet] // NSSet -> [Any] -> [Planet]?
+```
+
+## Query
+Получение всех планет солнца начинающихся на букву М.
+```swift
+let context = container.viewContext
+let request = Planet.fetchRequest()
+request.predicate = NSPredicate(format: "name CONTAINS %@ && star = %@", "M", sun)
+let planets = try? context.fetch(request)
+```

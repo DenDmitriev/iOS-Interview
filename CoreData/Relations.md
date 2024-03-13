@@ -6,4 +6,4 @@ CoreData позволяет вам создавать и поддерживат�
 
 Для демонстрации отношений создадим новую сущность Star и определим отношение с Planet как One-to-Many.
 
-![Relations  xcdatamodeld](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/3db2411f-8e67-4380-806c-a726703c76fb)
+![Relations  xcdatamodeld](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/b74efc7e-3c5c-4660-91f9-5ac6fa2167b6)

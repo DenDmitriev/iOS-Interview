@@ -1,298 +1,95 @@
-# Keychain
-Apple Keychain - это очень популярный и функциональный инструмент Swift, который использует каждый пользователь iOS и MacOS. Его можно использовать для сохранения паролей, безопасных заметок, сертификатов и т. д. В целом, Keychain - это зашифрованная база данных с довольно сложным и надежным API.
+# UserDefaults
+ UserDefaults использоваться для хранения информации по умолчанию о приложении или его пользователях. Например, пользователь должен иметь возможность указать персональные настройки такие как валюту по умолчанию, которую вы должны отображать при представлении некоторых данных. Эти предпочтения должны быть специфичными для приложения и должны быть постоянными между запусками приложений.
 
-## Причины
-Украденные данные из вашего приложения, взятые у вашего пользователя, будут на вашей ответственности. Поэтому некоторые данные нужно защищать, такие как:
-- Конфиденциальные пользовательские данные, такие как пароли или учетные данные для входа
-- Токены для API которые использет ваше приложение для работы, наприер: GoogleMapsAPI.
- 
-![1c9e8103-fae2-45f4-832c-c528d2e0c2f6](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8ce5ba3a-e2f6-4127-891a-3e3717e027a1)
+ UserDefaults представляется классом, который предоставляет интерфейс для сохранения пар ключ-значение и дает нам синхронное чтение и запись (на уровне кэша) и асинхронный уровень постоянства.
 
-## Недостатки
-- API был написан на Objective-C, и это может быть сложно для использования
+ Типы для хранения:
+ - NSData
+ - NSString
+ - NSNumber
+ - NSDate
+ - NSArray
+ - NSDictionary
 
-## Отличия с другими способами
-| Название | Шифрование |
-| - | - |
-| UserDefaults | ❌ |
-| Keychain | ✔️ |
+ ### Сохранение
+ Для сохранения используется метод `set(_:forKey:)`. Устанавливает значение указанного ключа по умолчанию.
 
-## Атрибуты данных
-При чтении или сохранении данных нужно указывать тип данных в этом запросе
-Значения, которые вы используете с ключом kSecClass:
-- `kSecClassGenericPassword` Значение, указывающее элемент общего пароля.
-- `kSecClassInternetPassword` Значение, указывающее элемент пароля Интернета.
-- `kSecClassCertificate` Значение, указывающее элемент сертификата.
-- `kSecClassKey` Значение, указывающее элемент криптографического ключа.
-- `kSecClassIdentity` Значение, указывающее элемент идентификации.
-> Поскольку API связки ключей был написан на Objective-C, то эти ключи являются типом CFString
+ ### Чтение
+ Для чтения используется метод `value(forKey:)`. Возвращает значение для свойства, идентифицированного заданным ключом.
 
+ ### Значения по умолчанию
+ Все эти методы возвращают значение по умолчанию, если указанный ключ еще не был установлен.
+ - Bool это false
+ - Int это 0
+ - String возвращает nil по умолчанию, поэтому возвращаемый тип является String?
 
-В следующем фрагменте Swift мы можем увидеть простой запрос, который позволяет прочитать пароль из Keychain для данной учетной записи внутри данной службы:
+ ## Использование
+ UserDefaults иммет стандартный `standard` экземпляр типа который вы используете как общий объект по умолчанию, в котором мы можем считывать и записывать пары ключ-значение.
 
-```swift
-struct KeychainItemStorable {
-    let service: String
-    let account: String
-}
-extension KeychainItemStorable {
-    enum Error: Swift.Error {
-        case passwordNotFound
-        case unknownError(String)
-        case invalidData
-    }
-    
-    func readPassword() throws -> String {
-        var query: [String : Any] = [:]
-        query[kSecClass as String] = kSecClassGenericPassword
-        query[kSecAttrService as String] = service
-        query[kSecAttrAccount as String] = account as AnyObject?
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        query[kSecReturnAttributes as String] = kCFBooleanTrue
-        query[kSecReturnData as String] = kCFBooleanTrue
-        
-        // Try to fetch the existing keychain item that matches the query.
-        var queryResult: AnyObject?
-        let status = withUnsafeMutablePointer(to: &queryResult) {
-            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
-        }
-        
-        switch status {
-        case noErr:
-            guard let items = queryResult as? [String: Any],
-                  let valueData = items[kSecValueData as String] as? Data,
-                  let valueString = String(data: valueData, encoding: .utf8) else
-            { throw Error.invalidData }
-            return valueString
-        case errSecItemNotFound:
-            throw Error.passwordNotFound
-        default:
-            throw Error.unknownError(status.description)
-        }
-    }
-}
-```
+ ### Ключ
+ Чтобы сохранить значение, вам нужно объявить его ключ. Ключ - это уникальная строка, которая идентифицирует значение в UserDefaults.
 
-Сохранение паролей еще сложнее, так как собственный API Keychain не проводит различий между добавлением элемента и обновлением элемента. Принимая во внимание все это, в целом, рекомендуется использовать для этой цели некоторые внешние библиотеки с некоторыми удобными API, такими как Locksmith или KeychainAccess.
+ Давайте рассмторим сервис для работы с этими данными:
+ ```swift
+ class UserRepository {
+     enum Key: String, CaseIterable {
+         case name, avatarData
 
-## Преимущества
-- Все элементы, сохраненные в связке ключей, зашифрованы (свячка ключей является самым безопасным уровнем сохранения данных в iOS)
-- Существует много оберток с открытым исходным кодом с удобными API Swift
-- Еще раз безопасность
-- Потокобезопасность
+         // Key for property
+         func make(for userID: String) -> String {
+             return self.rawValue + "_" + userID
+         }
+     }
 
-## Ограничения
-- Нет удобного API для ключей, поэтому вы обычно в конечном итоге зависите от проекта с открытым исходным кодом.
-- Трудно тестировать, если вы не создадите свою собственную обертку вокруг нее
-- Скорость: чтение или сохранение большого блика информации в Keychain может быть медленным
-- Не рекомендуется для хранения больших предметов
+     let userDefaults: UserDefaults
 
-# Реализация обвертки
-Давайте начнем с создания нового класса, который будет выполнять наши функции. Кроме того, давайте определим тип алиас для использования в словаре атрибутов, который нам понадобится.
-```swift
-final class KeychainManager {
-  
-   typealias ItemAttributes = [CFString : Any]
-  
-   static let shared = KeychainManager()
-  
-   private init() {}
-}
-```
-Для каждого метода, который предоставляет наш менеджер, нам нужен параметр, который указывает тип класса элемента для взаимодействия.
-Нам все еще нужно использовать тип CFString в наших функциях, потому что мы не знаем фактического значения константы. По этой причине нам нужно внедрить RawRepresentable в нашем перечислении ItemClass.
+     // MARK: - Lifecycle
+     init(userDefaults: UserDefaults = .standard) {
+         self.userDefaults = userDefaults
+     }
 
-```swift
-extension KeychainManager {
-    enum ItemClass: RawRepresentable {
-        typealias RawValue = CFString
-        
-        case generic
-        case password
-        case certificate
-        case cryptography
-        case identity
-        
-        init?(rawValue: CFString) {
-            switch rawValue {
-            case kSecClassGenericPassword:
-                self = .generic
-            case kSecClassInternetPassword:
-                self = .password
-            case kSecClassCertificate:
-                self = .certificate
-            case kSecClassKey:
-                self = .cryptography
-            case kSecClassIdentity:
-                self = .identity
-            default:
-                return nil
-            }
-        }
-        
-        var rawValue: CFString {
-            switch self {
-            case .generic:
-                return kSecClassGenericPassword
-            case .password:
-                return kSecClassInternetPassword
-            case .certificate:
-                return kSecClassCertificate
-            case .cryptography:
-                return kSecClassKey
-            case .identity:
-                return kSecClassIdentity
-            }
-        }
-    }
-}
-```
+     // MARK: - API
+     func storeInfo(forUserID userID: String, name: String, avatarData: Data) {
+         saveValue(forKey: .name, value: name, userID: userID)
+         saveValue(forKey: .avatarData, value: avatarData, userID: userID)
+     }
 
-Следующий шаг - определить некоторые ошибки для наших операций.
-```swift
-extension KeychainManager {
-    enum KeychainError: Error {
-        case invalidData
-        case itemNotFound
-        case duplicateItem
-        case incorrectAttributeForClass
-        case unexpected(OSStatus)
-        
-        var localizedDescription: String {
-            switch self {
-            case .invalidData:
-                return "Invalid data"
-            case .itemNotFound:
-                return "Item not found"
-            case .duplicateItem:
-                return "Duplicate Item"
-            case .incorrectAttributeForClass:
-                return "Incorrect Attribute for Class"
-            case .unexpected(let oSStatus):
-                return "Unexpected error - \(oSStatus)"
-            }
-        }
-    }
-}
-```
+     func getUserInfo(forUserID userID: String) -> (name: String?, avatarData: Data?) {
+         let name: String? = readValue(forKey: .name, userID: userID)
+         let avatarData: Data? = readValue(forKey: .avatarData, userID: userID)
+         return (name, avatarData)
+     }
 
-Мы получим результат типа OSStatus от всех четырех операций. Поскольку мы хотим вернуть наши собственные ошибки, давайте создадим функцию-вспомогатель, которая преобразует этот тип результата в нашу пользовательскую ошибку.
+     func removeUserInfo(forUserID userID: String) {
+         Key
+             .allCases
+             .map { $0.make(for: userID) }
+             .forEach { key in
+                 userDefaults.removeObject(forKey: key)
+             }
+     }
 
-```swift
-extension KeychainManager {
-    private func convertError(_ error: OSStatus) -> KeychainError {
-        switch error {
-        case errSecItemNotFound:
-            return .itemNotFound
-        case errSecDataTooLarge:
-            return .invalidData
-        case errSecDuplicateItem:
-            return .duplicateItem
-        default:
-            return .unexpected(error)
-        }
-    }
-}
-```
+     // MARK: - Private
+     private func saveValue(forKey key: Key, value: Any, userID: String) {
+         userDefaults.set(value, forKey: key.make(for: userID))
+     }
 
-Теперь мы находимся в хорошем месте для разработки наших методов API. Для всех четырех методов, которые будет предоставляться наш API, есть три параметра, которые нам нужно будет запросить:
-- Класс элемента, с которым мы хотим работать.
-- Ключ, который будет уникальным образом идентифицируть вместе с классом предмет в связке ключей.
-- Набор необязательных атрибутов, которые помогут быстрее получить доступ к элементам.
+     private func readValue<T>(forKey key: Key, userID: String) -> T? {
+         return userDefaults.value(forKey: key.make(for: userID)) as? T
+     }
+ }
+ ```
 
-## Сохранить элемент
-```swift
-func saveItem<T: Encodable>(_ item: T, itemClass: ItemClass, key: String, attributes: ItemAttributes? = nil) throws {
-       // 1. Мы кодируем данные для хранения
-       let itemData = try JSONEncoder().encode(item)
+ ## Преимущества
+ - UserDefaults прост в использовании, с простым API
+ - Потокобезопасен (вы можете читать и записывать значения из любого потока), не беспокоясь о синхронизации
+ - UserDefaults совместно используется приложением и расширениями приложения
 
-       // 2. Мы создаем словарь со всей информацией об элементе для хранения
-       var query: [String: AnyObject] = [
-          kSecClass as String: itemClass.rawValue, // класс элемента
-          kSecAttrAccount as String: key as AnyObject, // ключ для данных хранения
-          kSecValueData as String: itemData as AnyObject // данные для хранения
-       ]
+ ## Ограничения
+ - Можно легко переопределить значение для этого же ключа (коллизии ключей)
+ - UserDefaults не зашифрован
+ - Модульное тестирование пользовательских значений по умолчанию может происходить с некоторыми ложными срабатываниями.
+ - UserDefaults могут быть изменены глобально, из любой точки приложения, поэтому вы можете легко работать в непоследовательных состояниях.
 
-       // 3. Дополнительные атрибуты
-       if let itemAttributes = attributes {
-          for (key, value) in itemAttributes {
-              query[key as String] = value as AnyObject
-          }
-       }
-
-       // 4. Операция с связкой атриботов
-       let result = SecItemAdd(query as CFDictionary, nil)
-
-       // 5. Проверки на результат
-       if result != errSecSuccess {
-          throw convertError(result)
-       }
-    }
-```
-
-1. Мы кодируем данные для хранения. По этой причине предмет для хранения должен соответствовать протоколу Encodable. Сочетая использование дженериков, мы пишем только одну функцию, которая может быть использована для хранения любого элемента до тех пор, пока реализован протокол Encodable.
-2. Мы создаем словарь со всей информацией об элементе для хранения. 
-  - `kSecClas`s, класс элемента (пароль, сертификат и так далее).
-  - `kSecAttrAccount`, ключ для идентификации элементов хранения.
-  -  kSecValueData, фактические данные для хранения в связке ключей.
-3. Если мы получаем некоторые дополнительные атрибуты, мы добавляем их в запрос.
-4. Мы выполняем операцию с связынными атрибутами.
-5. Мы проверяем результат. Если это что-то отличное от успеха, мы преобразуем ошибку в наши собственные ошибки API и отбрасываем ее обратно.
-
-## Чтение элемента
-```swift
-func retrieveItem<T: Decodable>(ofClass itemClass: ItemClass, key: String, attributes: ItemAttributes? = nil) throws -> T {
-       // 1. Создание атрибутов для запроса
-       var query: [String: AnyObject] = [
-          kSecClass as String: itemClass.rawValue,
-          kSecAttrAccount as String: key as AnyObject,
-          kSecReturnAttributes as String: true as AnyObject,
-          kSecReturnData as String: true as AnyObject
-       ]
-
-       // 2. Добавление атрибутов
-       if let itemAttributes = attributes {
-          for(key, value) in itemAttributes {
-              query[key as String] = value as AnyObject
-          }
-       }
-
-       // 3. Ссылка на удержание результата
-       var item: CFTypeRef?
-
-       // 4. Выполнение запроса
-       let result = SecItemCopyMatching(query as CFDictionary, &item)
-
-       // 5. Проверка результата
-       if result != errSecSuccess {
-          throw convertError(result)
-       }
-
-       // 6. Проверка данных
-       guard
-          let keychainItem = item as? [String : Any],
-          let data = keychainItem[kSecValueData as String] as? Data
-       else {
-          throw KeychainError.invalidData
-       }
-
-       // 7. Декодинг данных
-       return try JSONDecoder().decode(T.self, from: data)
-    }
-```
-Как и в случае сохранения, мы используем общую функцию для повторного использования функции для каждого типа. В этом случае, поскольку мы извлекаем данные из связки ключей, которые мы будем декодировать, общий тип должен быть Decodable.
-
-1. Мы создаем запрос так же, как и в операции сохранения, но мы добавляем новую запись, чтобы сообщить связке ключей, что сохраненные данные должны быть возвращены.
-2. Мы добавляем атрибуты, если они есть.
-3. Создайте ссылку на удержание результата связки ключей.
-4. Выполните операцию.
-5. Проверьте результат так же, как и в операции сохранения.
-6. Мы следим за тем, чтобы данные присутствовали в результате связки ключей.
-7. Мы пытаемся декодировать полученные данные и отправить их обратно.
-
-## Обновление элемента
-
-
-## Источники:
-- [iOS Data Persistence in Swift](https://iosapptemplates.com/blog/ios-development/data-persistence-ios-swift)
-- [Keychain Services in Swift](https://blorenzop.medium.com/keychain-services-in-swift-ecb9d6d5c6cd)
+ ## Источники:
+ - [iOS Data Persistence in Swift](https://iosapptemplates.com/blog/ios-development/data-persistence-ios-swift)

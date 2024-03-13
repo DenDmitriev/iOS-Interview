@@ -65,3 +65,6 @@ extension KeychainItemStorable {
 - Трудно тестировать, если вы не создадите свою собственную обертку вокруг нее
 - Скорость: чтение или сохранение большого блика информации в Keychain может быть медленным
 - Не рекомендуется для хранения больших предметов
+
+## Источники:
+- [iOS Data Persistence in Swift](https://iosapptemplates.com/blog/ios-development/data-persistence-ios-swift)

@@ -203,38 +203,95 @@ extension KeychainManager {
 ## Сохранить элемент
 ```swift
 func saveItem<T: Encodable>(_ item: T, itemClass: ItemClass, key: String, attributes: ItemAttributes? = nil) throws {
-       // 1
+       // 1. Мы кодируем данные для хранения
        let itemData = try JSONEncoder().encode(item)
 
-       // 2
+       // 2. Мы создаем словарь со всей информацией об элементе для хранения
        var query: [String: AnyObject] = [
-          kSecClass as String: itemClass.rawValue,
-          kSecAttrAccount as String: key as AnyObject,
-          kSecValueData as String: itemData as AnyObject
+          kSecClass as String: itemClass.rawValue, // класс элемента
+          kSecAttrAccount as String: key as AnyObject, // ключ для данных хранения
+          kSecValueData as String: itemData as AnyObject // данные для хранения
        ]
 
-       // 3
+       // 3. Дополнительные атрибуты
        if let itemAttributes = attributes {
           for (key, value) in itemAttributes {
               query[key as String] = value as AnyObject
           }
        }
 
-       // 4
+       // 4. Операция с связкой атриботов
        let result = SecItemAdd(query as CFDictionary, nil)
 
-       // 5
+       // 5. Проверки на результат
        if result != errSecSuccess {
           throw convertError(result)
        }
     }
 ```
 
-1. Мы кодируем товар для хранения. По этой причине предмет для хранения должен соответствовать протоколу Encodable. Сочетая использование дженериков, мы пишем только одну функцию, которая может быть использована для хранения любого элемента до тех пор, пока реализован протокол Encodable.
-2. Мы создаем словарь со всей информацией об элементе для хранения it.kSecClass, класс элемента. kSecAttrAccount, чтобы идентифицировать элемент вместе с классом элемента. kSecValueData, фактические данные для хранения в связке ключей.
+1. Мы кодируем данные для хранения. По этой причине предмет для хранения должен соответствовать протоколу Encodable. Сочетая использование дженериков, мы пишем только одну функцию, которая может быть использована для хранения любого элемента до тех пор, пока реализован протокол Encodable.
+2. Мы создаем словарь со всей информацией об элементе для хранения. 
+  - `kSecClas`s, класс элемента (пароль, сертификат и так далее).
+  - `kSecAttrAccount`, ключ для идентификации элементов хранения.
+  -  kSecValueData, фактические данные для хранения в связке ключей.
 3. Если мы получаем некоторые дополнительные атрибуты, мы добавляем их в запрос.
-4. Мы выполняем операцию с ключевой связкой.
+4. Мы выполняем операцию с связынными атрибутами.
 5. Мы проверяем результат. Если это что-то отличное от успеха, мы преобразуем ошибку в наши собственные ошибки API и отбрасываем ее обратно.
+
+## Чтение элемента
+```swift
+func retrieveItem<T: Decodable>(ofClass itemClass: ItemClass, key: String, attributes: ItemAttributes? = nil) throws -> T {
+       // 1. Создание атрибутов для запроса
+       var query: [String: AnyObject] = [
+          kSecClass as String: itemClass.rawValue,
+          kSecAttrAccount as String: key as AnyObject,
+          kSecReturnAttributes as String: true as AnyObject,
+          kSecReturnData as String: true as AnyObject
+       ]
+
+       // 2. Добавление атрибутов
+       if let itemAttributes = attributes {
+          for(key, value) in itemAttributes {
+              query[key as String] = value as AnyObject
+          }
+       }
+
+       // 3. Ссылка на удержание результата
+       var item: CFTypeRef?
+
+       // 4. Выполнение запроса
+       let result = SecItemCopyMatching(query as CFDictionary, &item)
+
+       // 5. Проверка результата
+       if result != errSecSuccess {
+          throw convertError(result)
+       }
+
+       // 6. Проверка данных
+       guard
+          let keychainItem = item as? [String : Any],
+          let data = keychainItem[kSecValueData as String] as? Data
+       else {
+          throw KeychainError.invalidData
+       }
+
+       // 7. Декодинг данных
+       return try JSONDecoder().decode(T.self, from: data)
+    }
+```
+Как и в случае сохранения, мы используем общую функцию для повторного использования функции для каждого типа. В этом случае, поскольку мы извлекаем данные из связки ключей, которые мы будем декодировать, общий тип должен быть Decodable.
+
+1. Мы создаем запрос так же, как и в операции сохранения, но мы добавляем новую запись, чтобы сообщить связке ключей, что сохраненные данные должны быть возвращены.
+2. Мы добавляем атрибуты, если они есть.
+3. Создайте ссылку на удержание результата связки ключей.
+4. Выполните операцию.
+5. Проверьте результат так же, как и в операции сохранения.
+6. Мы следим за тем, чтобы данные присутствовали в результате связки ключей.
+7. Мы пытаемся декодировать полученные данные и отправить их обратно.
+
+## Обновление элемента
+
 
 ## Источники:
 - [iOS Data Persistence in Swift](https://iosapptemplates.com/blog/ios-development/data-persistence-ios-swift)

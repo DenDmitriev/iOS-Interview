@@ -47,14 +47,14 @@ let sun = (try? context.fetch(request))?.first // Star?
 ```
 Приведение к неопуиональному типу Star и поработаем с моделью:
 
-## Получеение объектов детей
+## Получение объектов детей
 Получение всеx планет солнца.
 ```swift
 let context = container.viewContext
 let planets = star.planets.allObjects as? [Planet] // NSSet -> [Any] -> [Planet]?
 ```
 
-## Получеение объектов детей по фильтру
+## Получение объектов детей по фильтру
 Получение всех планет солнца начинающихся на букву М.
 ```swift
 let context = container.viewContext

@@ -291,7 +291,90 @@ func retrieveItem<T: Decodable>(ofClass itemClass: ItemClass, key: String, attri
 7. Мы пытаемся декодировать полученные данные и отправить их обратно.
 
 ## Обновление элемента
+```swift
+func updateItem<T: Encodable>(with item: T, ofClass itemClass: ItemClass, key: String, attributes: ItemAttributes? = nil) throws {
 
+       let itemData = try JSONEncoder().encode(item)
+
+       var query: [String: AnyObject] = [
+          kSecClass as String: itemClass.rawValue,
+          kSecAttrAccount as String: key as AnyObject
+       ]
+
+       if let itemAttributes = attributes {
+          for(key, value) in itemAttributes {
+              query[key as String] = value as AnyObject
+          }
+       }
+
+       let attributesToUpdate: [String: AnyObject] = [
+          kSecValueData as String: itemData as AnyObject
+       ]
+
+       let result = SecItemUpdate(
+          query as CFDictionary,
+          attributesToUpdate as CFDictionary
+       )
+
+       if result != errSecSuccess {
+          throw convertError(result)
+       }
+    }
+```
+Операция обновления очень похожа на операцию сохранения. Мы начинаем с кодирования данных, которые заменят те, которые в настоящее время хранятся в связке ключей. Затем мы создаем словарь запросов, чтобы идентифицировать элемент и добавляем дополнительные атрибуты.
+
+Однако, чтобы обновить элемент, нам нужно создать другой словарь, который будет иметь данные для замены.
+При этом мы вызываем операцию обновления связки ключей и обрабатываем результат, как в предыдущих методах.
+
+## Удаление элемента
+```swift
+    func deleteItem(ofClass itemClass: ItemClass, key: String, attributes: ItemAttributes? = nil) throws {
+
+       var query: [String: AnyObject] = [
+          kSecClass as String: itemClass.rawValue,
+          kSecAttrAccount as String: key as AnyObject
+       ]
+
+       if let itemAttributes = attributes {
+          for(key, value) in itemAttributes {
+              query[key as String] = value as AnyObject
+          }
+       }
+
+       let result = SecItemDelete(query as CFDictionary)
+       if result != errSecSuccess {
+          throw convertError(result)
+       }
+    }
+```
+Операция удаления является самой простой. Как и в любом другом методе, мы создаем наш запрос с помощью класса элемента и ключа. Попробуйте добавить дополнительные атрибуты и выполните операцию удаления связки ключей. Наконец, мы проверяем результат и выдаем ошибку на случай, если операция не увенчалась успехом.
+
+## Использование
+Теперь, когда у нас все на месте, давайте посмотрим, как мы можем использовать наш API связки ключей.
+
+```swift
+let apiToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+
+do {
+   let apiTokenAttributes: KeychainManager.ItemAttributes = [kSecAttrLabel: "ApiToken"]
+
+   try KeychainManager.shared.saveItem(apiToken, itemClass: .generic, key: "ApiToken", attributes: apiTokenAttributes)
+
+   let token: String = try KeychainManager.shared.retrieveItem(ofClass: .generic, key: "ApiToken", attributes: apiTokenAttributes)
+
+   try KeychainManager.shared.updateItem(with: "new-token-value", ofClass: .generic, key: "ApiToken", attributes: apiTokenAttributes)
+
+   try KeychainManager.shared.deleteItem(ofClass: .generic, key: "ApiToken", attributes: apiTokenAttributes)
+
+} catch let keychainError as KeychainManager.KeychainError {
+   print(keychainError.localizedDescription)
+} catch {
+   print(error)
+}
+```
+
+## Вывод
+Мы всегда должны стремиться использовать правильные функции из правильных сценариев, независимо от того, насколько сложно это может быть в начале. Хранение конфиденциальных данных в связке ключей (Keychain) повысит безопасность вашего приложения и снизит возможные риски.
 
 ## Источники:
 - [iOS Data Persistence in Swift](https://iosapptemplates.com/blog/ios-development/data-persistence-ios-swift)

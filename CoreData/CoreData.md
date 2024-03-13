@@ -267,3 +267,9 @@ let venera = try? context.existingObject(with: id) as? Planet
 venera?.name = "Mars"
 try? context.save()
 ```
+
+## Источники
+- [Стартуем с Core Data! Сложное простыми словами. Часть 1](https://habr.com/ru/articles/493262/)
+- [Стартуем с Core Data! Сложное простыми словами. Часть 2](https://habr.com/ru/articles/495602/)
+- [Core Data в современном интерьере SwiftUI. Некоторые уточнения и заблуждения. часть 1](https://habr.com/ru/articles/663974/)
+- [Core Data stack](https://developer.apple.com/documentation/coredata/core_data_stack)

@@ -3,6 +3,14 @@
 
 CoreData очень мощный инструмент, который позволяет вам сохранять данные в вашем приложении и использовать их в дальнейшем в виде моделей. Модели представляют данные, хранящиеся в таблицах или коллекциях в вашей базе данных. Модели имеют одно или несколько полей, в которых хранятся значения. 
 
+## Функциональные возможности
+- Обертка базы данных без SQL запросов
+- Простое чтение данных в основном потоке
+- Простое в использовании сохранение данных в фоновом потоке
+- Простая настройка базы данных в памяти (например, для кэширования или модульного тестирования)
+- Поддержка автоматической миграции базы данных между выпусками приложений
+- Простой в настройке инструмент моделирования базы данных (с помощью Interface Builder в `.xcdatamodeld`)
+
 ## Определение модели (сущность)
 Для создания модели данных используется графический способ в файле `.xcdatamodeld`. Файл представляет собой директорию в файловой системе, которая содержит информацию о структуре модели данных. Модель данных является основой каждого приложения использующего Core Data. Если его нет, то нужно его создать cmd + N. 
 
@@ -260,6 +268,22 @@ let planet = try? context.existingObject(with: id) as? Planet
 
 > Пока выполняется NSFetchRequest Managed Object Context и Persistent Store Coordinator выполняется в синхронной очереди и все процессы блокируются пока другой процесс отрабатывается
 
+Свойства FetchRequest:
+#### FetchLimit
+FetchLimit — указывает лимит по выборке объектов.
+
+#### FetchOffset
+FetchOffset — указывает отступ. Если указать значение 2, то показываться элементы будут со второго элемента.
+
+#### FetchBatchSize
+FetchBatchSize — указывает какое количество элементов будет подгружено за раз. Если вы отображаете элементы в Table/CollectionView и у вас за раз показывается всего 5 элементов, в целях производительности лучше подгружать не больше 7 элементов за раз, чем брать сразу все данные и держать их в памяти.
+
+#### SortDescriptor
+SortDescriptor — указывает по какому ключу следует отсортировать запрос, а так же по возрастанию либо наоборот.
+
+#### ReturnsObjectsAsFaults
+ReturnsObjectsAsFaults — указывает, что наши значения могут придти пустыми, и когда мы к ним обратимся, они будут подгружены с нашего PersistentStore которые в данный момент находятся там в виде RawCache
+
 ## Обновление
 Чтоб обновить объект нужно получить объект одним из способо, изменить его, затем сохранить контекст
 ```swift
@@ -267,6 +291,67 @@ let venera = try? context.existingObject(with: id) as? Planet
 venera?.name = "Mars"
 try? context.save()
 ```
+
+## Чтение и сохранения данных
+Если ваше приложение активно задействует какой-нибудь API через которое оно получает данные, и вы хотите эти данные где-то сохранять, то отличный выбор — Core Data. Какие у вас могут появиться проблемы с этим? Первое и самое очевидное — количество данных будет так велико, что при попытке сохранить их, наше приложение зависнет на какое-то время, что скажется впечатлении пользователя. Обычным GCD тут не обойтись так как независимо, наш Core Data Stack, о котором говорилось тут, работает синхронно и при любом обращении к нашему NSManageObjectContext нам придется ждать до конца выполнения цикла.
+
+Но тут на помощь нам приходит приватный NSManageObjectContext который работает в background потоке. Для того чтобы его вызвать требуется сначала обратиться к нашему NSPersistentContainer.
+
+Инициализация будет выглядеть следующим образом:
+```swift
+lazy var persistentContainer: NSPersistentContainer = {
+    let container = NSPersistentContainer(name: "Preset")
+    container.loadPersistentStores { (persistent, error) in
+        if let error = error {
+            fatalError("Error: " + error.localizedDescription)
+        }
+    }
+    container.viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
+    container.viewContext.shouldDeleteInaccessibleFaults = true
+    container.viewContext.automaticallyMergesChangesFromParent = true
+    return container
+}()
+```
+
+### MergePolicy
+Политика слияния контекста. Тут вы указываем политику слияния наших NSManageObjectContext. Тут мы явно указываем как должна себя повести Core Data в случае конфликта данных.
+
+Варианты MergePolicy:
+- Rollback `NSRollbackMergePolicy` — В случае появления конфликта, отбрасывает все изменения до его появления
+- Overwrite `NSOverwriteMergePolicy` — Сохранит новые значения независимо от данных
+- MergeByPropertyStore `NSMergeByPropertyStoreTrumpMergePolicy` — Сохраняет измененные объекты свойство за свойством, в данном случае преобладать будут сохраненные данные
+- MergeByPropertyObjectTrump `NSMergeByPropertyObjectTrumpMergePolicy` — Сохраняет измененные объекты свойство за свойством, в данном случае преобладать будут новые данные
+
+### AutomaticallyMergesChangesFromParent
+Говорит о том будет ли наш контекст автоматически объединять данные
+После чего создаем новый контекст:
+```
+let context = persistentContainer.viewContext
+let backgroundContext = persistentContainer.newBackgroundContext()
+```
+Теперь у нас имеется два NSManageObjectContext. 
+1. `context` служит для работы с UI и работает на главном потоке, а второй имеет privateQueueConcurrencyType для работы в фоне.
+2. `backgroundContext` мы будем использовать его для скачивания данных.
+
+Тут мы создаем наше Entity и далее можем присвоить ему необходимые свойства, после чего вызываем метод сохранения, выглядит он следующим образом:
+```swift
+    func saveChanges(with context: NSManagedObjectContext) {
+        context.performAndWait {
+            if context.hasChanges {
+                do {
+                    try context.save()
+                } catch {
+                    context.rollback()
+                }
+            }
+            context.reset()
+        }
+    }
+```
+
+Есть 2 метода на выбор:
+1. performAndWait — выполняет действия на потоке контекста синхронно
+2. perform — выполняет действия на потоке контекста асинхронно
 
 ## Источники
 - [Стартуем с Core Data! Сложное простыми словами. Часть 1](https://habr.com/ru/articles/493262/)

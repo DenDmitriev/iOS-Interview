@@ -73,3 +73,5 @@ class UserRepository {
 - Модульное тестирование пользовательских значений по умолчанию может происходить с некоторыми ложными срабатываниями.
 - UserDefaults могут быть изменены глобально, из любой точки приложения, поэтому вы можете легко работать в непоследовательных состояниях.
 
+## Источники:
+- [iOS Data Persistence in Swift](https://iosapptemplates.com/blog/ios-development/data-persistence-ios-swift)

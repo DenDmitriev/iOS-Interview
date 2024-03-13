@@ -17,8 +17,8 @@ extension Star {
         return NSFetchRequest<Star>(entityName: "Star")
     }
 
-    @NSManaged public var name: String
-    @NSManaged public var planets: NSSet // Свойство planets отношение один ко многим между двумя моделями.
+    @NSManaged public var name: String?
+    @NSManaged public var planets: NSSet? // Свойство planets отношение один ко многим между двумя моделями.
 
 }
 ```
@@ -30,8 +30,8 @@ extension Planet {
         return NSFetchRequest<Planet>(entityName: "Planet")
     }
 
-    @NSManaged public var name: String
-    @NSManaged public var star: Star // Отношение star хранит ссылку на свойство другой модели.
+    @NSManaged public var name: String?
+    @NSManaged public var star: Star? // Отношение star хранит ссылку на свойство другой модели.
 
 }
 ```

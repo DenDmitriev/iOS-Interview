@@ -77,6 +77,24 @@ extension Planet {
 
 <img width="559" alt="Снимок экрана 2024-03-14 в 08 34 04" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/0694234c-fdfa-4b68-8070-d28f7583e70d">
 
+Давайте попробум осуществить сложную миграцию добавив свойство image. Для этого добавим третью версию модели данных и выберем её по умолчанию. Так как атрибут будет содержать бинарные биты изображения, то вы будете использовать NSValueTransformer для трансформации бинарных битов в Image, и обратно. Именной такой трансформер был предоставлен как ImageTransformer. В поле Value Transformer Name, в инспекторе модели данных введите CoreDataDocumentation.ImageTransformer.
+
+<img width="260" alt="Снимок экрана 2024-03-14 в 08 47 10" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/4da081b7-b54e-4caa-b8e5-05614096cc61">
+
+Сгенерируем код для модели:
+```swift
+extension Planet {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Planet> {
+        return NSFetchRequest<Planet>(entityName: "Planet")
+    }
+
+    @NSManaged public var name: String?
+    @NSManaged public var orbit: Int16
+    @NSManaged public var image: NSObject? // Наше изображение
+    @NSManaged public var star: Star?
+}
+```
 
 ## Источники:
 - [Core Data: Часть 2. Lightweight Миграции](https://swiftbook.ru/post/tutorials/core-data-chast-2-lightweight-migracii/)

@@ -72,9 +72,5 @@ extension Planet {
 ```
 Запустите приложение и Core Data может автоматически обновит ваше хранилище, если вы добавили новое свойство как у нас в примере. Это и называется простая миграция (lightweight migration).
 
-Добавив в ячейке поле для отображения номер орбиты, экран будет выглядеть так:
-
-<img width="559" alt="Снимок экрана 2024-03-14 в 08 34 04" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/0694234c-fdfa-4b68-8070-d28f7583e70d">
-
 ## Источники:
 - [Core Data: Часть 2. Lightweight Миграции](https://swiftbook.ru/post/tutorials/core-data-chast-2-lightweight-migracii/)

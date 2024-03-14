@@ -49,10 +49,33 @@
 
 Core Data загрузит отмеченную версию вашей модели данных. Старая же версия остается для поддержания миграции, так как крайне сложно мигрировать в новую модель, не зная старой.
 
-Добавьте атрибут orbit и установите его тип как Integer 16, так как атрибут будет содержать натуральные числа.
+Добавьте атрибут orbit и установите его тип как Integer 16, так как атрибут будет содержать натуральные числа. Дефолное значение будет 0.
 
 <img width="258" alt="Снимок экрана 2024-03-14 в 08 21 55" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8da80bd7-2795-4144-b78f-61fdc07e8585">
 
+Новая модель теперь готова для генерации кода! Нажимаем Editor -> Create NSManagedObject Subclass. Отметьте только те модели галочками, которые будут меняться.
+
+<img width="350" alt="Снимок экрана 2024-03-14 в 08 24 10" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/bdb1bbfd-7f28-4fef-ae5c-91321d3385ee">
+<img width="350" alt="Снимок экрана 2024-03-14 в 08 24 15" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/64b4f9af-24fc-45a1-b00a-d103e8b83f0c">
+
+Откройте Planet+CoreDataProperties.swift и там появился новый атрибут:
+```swift
+extension Planet {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Planet> {
+        return NSFetchRequest<Planet>(entityName: "Planet")
+    }
+
+    @NSManaged public var name: String?
+    @NSManaged public var orbit: Int16 // наша орбита
+    @NSManaged public var star: Star?
+}
+```
+Запустите приложение и Core Data может автоматически обновит ваше хранилище, если вы добавили новое свойство как у нас в примере. Это и называется простая миграция (lightweight migration).
+
+Добавив в ячейке поле для отображения номер орбиты, экран будет выглядеть так:
+
+<img width="559" alt="Снимок экрана 2024-03-14 в 08 34 04" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/0694234c-fdfa-4b68-8070-d28f7583e70d">
 
 
 ## Источники:

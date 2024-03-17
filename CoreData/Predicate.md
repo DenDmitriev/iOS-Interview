@@ -79,5 +79,24 @@ let inPredicate = NSPredicate(format: "name IN %@", names)
 - `array[LAST]` Указывает последний элемент в array.
 - `array[SIZE]` Определяет размер array массива.
 
+## Литеральные
+Одинарные и двойные кавычки дают один и тот же результат, но не замещают друг друга. Например, "abc" и 'abc' идентичны, тогда как "a'b'c" эквивалентно объединению a, 'b', c, разделенных пробелами.
 
+- `FALSE`, `NO` Логическая ложь.
+- `TRUE`, `YES` Логическая правда.
+- `NULL`, `NIL ` Нульное значение.
+- `SELF` Представляет оцениваемый объект.
+- "text", 'text' Строка символов.
+- Текстовый массив, разделенный запятыми. Например, { 'comma', 'separated', 'literal', 'array' }.
+- Стандартные целочисленные и фиксированные обозначения. Например, 1, 27, 2.71828, 19.75.
+- Числа с плавающей запяткой с экспоненцией. Например, 9.2e-5.
+- 0x. Префикс используется для обозначения шестнадцатеричной последовательности цифр.
+- 0o. Префикс используется для обозначения восьмиричной последовательности цифр.
+- 0b. Префикс используется для обозначения двоичной последовательности цифр.
 
+## Зарезервированные Слова
+Следующие слова зарезервированы:
+AND, OR, IN, NOT, ALL, ANY, SOME, NONE, LIKE, CASEINSENSITIVE, CI, MATCHES, CONTAINS, BEGINSWITH, ENDSWITH, BETWEEN, NULL, NIL, SELF, TRUE, YES, FALSE, NO, FIRST, LAST, SIZE, ANYKEY, SUBQUERY, FETCH, CAST, TRUEPREDICATE, FALSEPREDICATE, UTI-CONFORMS-TO, UTI-EQUALS,
+
+## Источники
+- [Predicate Format String Syntax](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Predicates/Articles/pSyntax.html)

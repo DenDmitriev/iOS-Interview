@@ -96,6 +96,74 @@ SELECT * FROM course WHERE credits>3;
 SELECT * FROM course WHERE dept_name='Comp. Sci.' AND credits>3;
 ```
 
+### GROUP BY
+Оператор GROUP BY часто используется с агрегатными функциями, такими как COUNT, MAX, MIN, SUM и AVG, для группировки выходных значений.
+Пример
+Выведем количество курсов для каждого факультета:
+```sql
+SELECT COUNT(course_id), dept_name
+  FROM course
+  GROUP BY dept_name;
+```
+
+### ORDER BY
+ORDER BY используется для сортировки результатов запроса по убыванию или возрастанию. ORDER BY отсортирует по возрастанию, если не будет указан способ сортировки ASC или DESC.
+```sql
+SELECT , , …
+  FROM 
+  ORDER BY , , … ASC|DESC;
+```
+Пример
+Выведем список курсов по возрастанию и убыванию количества кредитов:
+```sql
+SELECT * FROM course ORDER BY credits;
+SELECT * FROM course ORDER BY credits DESC;
+```
+
+### BETWEEN
+BETWEEN используется для выбора значений данных из определённого промежутка. Могут быть использованы числовые и текстовые значения, а также даты.
+Пример
+Выведем список инструкторов, чья зарплата больше 50 000, но меньше 100 000:
+```sql
+SELECT * FROM instructor
+  WHERE salary BETWEEN 50000 AND 100000;
+```
+
+### LIKE
+Оператор LIKE используется в WHERE, чтобы задать шаблон поиска похожего значения.
+Есть два свободных оператора, которые используются в LIKE:
+- % (ни одного, один или несколько символов);
+- _ (один символ).
+
+Пример
+Выведем список курсов, в имени которых содержится «to», и список курсов, название которых начинается с «CS-»:
+```sql
+SELECT * FROM course WHERE title LIKE ‘%to%’;
+SELECT * FROM course WHERE course_id LIKE 'CS-___';
+```
+
+### IN
+С помощью IN можно указать несколько значений для оператора WHERE.
+Пример
+Выведем список студентов с направлений Comp. Sci., Physics и Elec. Eng.:
+```sql
+SELECT * FROM student
+  WHERE dept_name IN (‘Comp. Sci.’, ‘Physics’, ‘Elec. Eng.’);
+```
+
+### JOIN
+JOIN используется для связи двух или более таблиц с помощью общих атрибутов внутри них. На изображении ниже показаны различные способы объединения в SQL. Обратите внимание на разницу между левым внешним объединением и правым внешним объединением:
+
+![13](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/4288859e-c102-4d0b-8b84-bca3207c67f7)
+
+Пример
+Выведем список всех обязательных курсов и детали о них:
+```sql
+SELECT prereq.course_id, title, dept_name, credits, prereq_id
+  FROM prereq
+  LEFT OUTER JOIN course
+  ON prereq.course_id=course.course_id;
+```
 
 ## Вопросы
 ### В чем отличия SQLite и SQL

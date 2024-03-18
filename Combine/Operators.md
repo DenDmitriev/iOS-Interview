@@ -554,6 +554,32 @@ var subscriptions = Set<AnyCancellable>()
 
 <img width="694" alt="Снимок экрана 2024-03-01 в 09 57 27" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8b4929b7-af47-444d-b7b3-81bc7264fadd">
 
+## retry
+Попытки воссоздать неудавшеюся подписку с вышестоячим издателем до указанного вами количества раз.
+```swift
+let cancellable: AnyCancellable?
+
+struct WebSiteData: Codable {
+    var rawHTML: String
+}
+
+let myURL = URL(string: "https://www.somefail.com")
+
+cancellable = URLSession.shared.dataTaskPublisher(for: myURL!)
+    .retry(3)
+    .map({ (page) -> WebSiteData in
+        return WebSiteData(rawHTML: String(decoding: page.data, as: UTF8.self))
+    })
+    .catch { error in
+        return Just(WebSiteData(rawHTML: "<HTML>Unable to load page - timed out.</HTML>"))
+    }
+    .sink(receiveCompletion: { print ("completion: \($0)") },
+          receiveValue: { print ("value: \($0)") }
+    )
+// value: WebSiteData(rawHTML: "<HTML>Unable to load page - timed out.</HTML>")
+// completion: finished
+```
+
 # Операторы метаданных
 ## Count
 Возвращает, сколько значений было опубликовано от издателя выше но игнорируя их. Публикует своезначение значение только тогда, когда заканчивается вышепоток.

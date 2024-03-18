@@ -806,11 +806,139 @@ subject.send(("С", 3))
 # Операторы ошибок
 ## replaceError
 Оператор для замены ошибок на определенное значение
+```swift
+let cancellable: AnyCancellable?
+
+struct MyError: Error {}
+
+let fail = Fail<String, MyError>(error: MyError())
+cancellable = fail
+    .replaceError(with: "(replacement element)")
+    .sink(
+        receiveCompletion: { print ("\($0)") },
+        receiveValue: { print ("\($0)", terminator: " ") }
+    )
+```
 
 ## mapError
-Оператор для преобразования ошибок
+Оператор для преобразования ошибок.
+```swift
+enum DivisionError: Error, LocalizedError {
+    case divisionByZeroError
+    
+    var errorDescription: String? {
+        switch self {
+        case .divisionByZeroError:
+            "Сan't divide by zero"
+        }
+    }
+}
+struct MyGenericError: Error { var wrappedError: Error }
+
+
+func myDivide(_ dividend: Double, _ divisor: Double) throws -> Double {
+    guard divisor != 0 else { throw DivisionError.divisionByZeroError }
+    return dividend / divisor
+}
+
+
+let divisors: [Double] = [5, 4, 3, 2, 1, 0]
+
+let publisher = divisors.publisher // GenericPublisher<[Double], Never>
+    .tryMap { try myDivide(1, $0) } // GenericPublisher<[Double], Error>
+    .mapError { MyGenericError(wrappedError: $0) } //  GenericPublisher<[Double], MyGenericError>
+    .sink { completion in
+        switch completion {
+        case .finished:
+            print("completion: \(completion)")
+        case .failure(let error):
+            print("completion with error: \(error.wrappedError.localizedDescription)")
+        }
+    } receiveValue: { value in
+        print("value: \(value)")
+    }
+
+// value: 0.2
+// value: 0.25
+// value: 0.3333333333333333
+// value: 0.5
+// value: 1.0
+// completion with error: Сan't divide by zero
+```
 
 ## tryMap
+Преобразует вышестоящего издателя в издателя с возможностью выбросить ошибку.
+
+## catch, tryCatch
+catch - Ловит ошибки вышестоящего издателя, заменяя его другим издателем, например Just.
+```swift
+let cancellable: AnyCancellable?
+
+struct SimpleError: Error {}
+let numbers = [5, 4, 3, 2, 1, 0, 9, 8, 7, 6]
+cancellable = numbers.publisher
+    .tryLast(where: {
+        guard $0 != 0 else {throw SimpleError()}
+        return true
+    })
+    .catch({ (error) in
+        Just(-1)
+    })
+    .sink { print("\($0)") }
+    
+// Prints: -1
+```
+tryCatch - Обрабатывает ошибки вышестоящего издателя, либо заменяя его другим издателем, либо выбрасывая новую ошибку.
+
+```swift
+enum SimpleError: Error { case error }
+var numbers = [5, 4, 3, 2, 1, -1, 7, 8, 9, 10]
+
+
+cancellable = numbers.publisher
+   .tryMap { v in
+        if v > 0 {
+            return v
+        } else {
+            throw SimpleError.error
+        }
+}
+  .tryCatch { error in
+      Just(0) // Send a final value before completing normally.
+              // Alternatively, throw a new error to terminate the stream.
+}
+  .sink(receiveCompletion: { print ("Completion: \($0).") },
+        receiveValue: { print ("Received \($0).") }
+  )
+//    Received 5.
+//    Received 4.
+//    Received 3.
+//    Received 2.
+//    Received 1.
+//    Received 0.
+//    Completion: finished.
+```
+
+# Операторы отладки
+## assertNoFailure(_:file:line:)
+Вызывает фатальную ошибку, когда его вышестоя издатель терпит неудачу, и в противном случае переиздает все полученные входные данные.
+```swift
+public enum SubjectError: Error {
+    case genericSubjectError
+}
+
+
+let subject = CurrentValueSubject<String, SubjectError>("initial value")
+subject
+    .assertNoFailure()
+    .sink(receiveCompletion: { print ("completion: \($0)") },
+          receiveValue: { print ("value: \($0).") }
+    )
+
+
+subject.send("second value")
+subject.send(completion: .failure(.genericSubjectError)) // error: Execution was interrupted, reason: EXC_BREAKPOINT
+```
 
 ## breakpointOnError
 Поднимает сигнал отладчика при получении сбоя.

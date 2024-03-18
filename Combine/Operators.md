@@ -810,6 +810,33 @@ subject.send(("С", 3))
 ## mapError
 Оператор для преобразования ошибок
 
+## tryMap
+
+## breakpointOnError
+Поднимает сигнал отладчика при получении сбоя.
+Когда вышестояний издатель выходит из строя с ошибкой, этот издатель вызывает сигнал SIGTRAP, который останавливает процесс в отладчике. В противном случае этот издатель проходит через ценности и завершения как есть.
+```swift
+ struct CustomError : Error {}
+ let publisher = PassthroughSubject<String?, Error>()
+ cancellable = publisher
+     .tryMap { stringValue in
+         throw CustomError()
+     }
+     .breakpointOnError()
+     .sink(
+         receiveCompletion: { completion in print("Completion: \(String(describing: completion))") },
+         receiveValue: { aValue in print("Result: \(String(describing: aValue))") }
+     )
+
+
+ publisher.send("TEST DATA")
+
+
+ // Prints: "error: Execution was interrupted, reason: signal SIGTRAP."
+ // Depending on your specific environment, the console messages may
+ // also include stack trace information, which is not shown here.
+```
+
 ## Источники:
 - [Swift Combine Operators: the Core Ones and When Apply](https://betterprogramming.pub/swift-combine-operators-the-core-ones-and-when-apply-82d6dd310aa5)
 - [Publishers & Subscribers](https://www.kodeco.com/books/combine-asynchronous-programming-with-swift/v2.0/chapters/2-publishers-subscribers)

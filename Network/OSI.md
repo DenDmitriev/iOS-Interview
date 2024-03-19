@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td>Прикладной (application)</td>
-        <td><img width="260" alt="" src=""></td>
+        <td><img width="260" alt="http" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/e0ff0337-e4d5-4158-87f4-ebc82b1989d0"></td>
         <td>Данные</td>
         <td>Доступ к сетевым службам</td>
         <td>Уровень взаимодействия человека и компьютера, где приложениям доступны сетевые службы</td>
@@ -21,7 +21,7 @@
     </tr>
     <tr>
         <td>Представления (presentation)</td>
-        <td><img width="260" alt="" src=""></td>
+        <td><img width="260" alt="SSL" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/8c48b7b5-31ba-469e-bbae-39cd5a367b3e"></td>
         <td>Данные</td>
         <td>Представление и шифрование данных</td>
         <td>Уровень, где гарантируется использование в нужном формате, осуществляется шифрование</td>
@@ -30,7 +30,7 @@
     </tr>
     <tr>
         <td>Сеансовый (session)</td>
-        <td><img width="260" alt="" src=""></td>
+        <td><img width="260" alt="session" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/32cea573-91e7-4252-92a2-aaca5714de85"></td>
         <td>Данные</td>
         <td>Управление сеансом связи</td>
         <td>Уровень, где поддерживается сеанс связи, надежное соединение двух сторон</td>
@@ -74,6 +74,4 @@
         <td>"Сетевой мост, Коммутатор,</td>
     </tr>
 </table>
-![Unknown-4](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/523dd5dc-f154-4184-a249-8d399ed3ae14)
 
-![Network-Diagram-Example-3](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/f9d05295-9751-4654-abd3-24793d6643b5)

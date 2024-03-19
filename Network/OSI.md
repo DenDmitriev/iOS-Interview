@@ -1,7 +1,5 @@
 # Модель OSI для начинающих
 
-![модель оси](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/32fbbd5b-b8e0-489a-9dfa-c4d86bcd9eea)
-
 <table>
     <tr>
         <td>Уровень</td>

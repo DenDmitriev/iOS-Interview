@@ -215,3 +215,4 @@ Content-Length: 90
 
 ## Источники:
 - [Как новичку начать пользоваться GraphQL и зачем это нужно](https://blog.skillfactory.ru/kak-novichku-nachat-polzovatsya-graphql-i-zachem-eto-nuzhno/)
+- [Что же такое этот GraphQL?](https://habr.com/ru/articles/326986/)

@@ -201,9 +201,9 @@ Redux - это библиотека JS для управления состоя�
 - View подписывается на изменения состояния из магазина.
 - Middleware - Промежуточные действия для выполнения задачи дополнительных задач.
 
-![three-ducks-redux-workflow-650x309](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/6ec84cdd-a415-4533-a5f6-22d253841570)
+<img width="400" alt="Redux" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/6ec84cdd-a415-4533-a5f6-22d253841570">
 
-![three-ducks-redux-middleware-workflow](https://github.com/DenDmitriev/iOS-Interview/assets/65191747/c26284f4-a117-4d7c-ac3f-ffef9871c714)
+<img width="400" alt="Middleware" src="https://github.com/DenDmitriev/iOS-Interview/assets/65191747/c26284f4-a117-4d7c-ac3f-ffef9871c714">
 
 
 ## Источники:
